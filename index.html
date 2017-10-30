@@ -4,15 +4,25 @@
   <meta charset="UTF-8">
   <title>MakeMake</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
   <div id="editor"></div>
+  <button id="show-props-sidebar">Add Propellers</button>
+  <button id="show-extras-sidebar">Add Extras</button>
   <div id="props-sidebar">
-    <button id="add3props">Add 3 Propellers</button>
-    <button id="add4props">Add 4 Propellers</button>
-    <button id="add6props">Add 6 Propellers</button>
+    <h2>Add propellers</h2>
+    <button id="add3props">3 Props</button>
+    <button id="add4props">4 Props</button>
+    <button id="add6props">6 Prop</button>
+  </div>
+  <div id="extras-sidebar">
+    <h2>Add extras</h2>
+    <button id="add-camera">Camera</button>
+    <button id="add-ir">IR sensor</button>
+    <button id="add-random">Random sensor</button>
   </div>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js'></script>

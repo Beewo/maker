@@ -1,18 +1,70 @@
 html {
   margin: 0;
   padding: 0;
-  background: #111113; }
+  background: #111113;
+  font-family: "Varela Round", sans-serif; }
+
+button {
+  font-family: "Varela Round", sans-serif;
+  font-size: 2em; }
 
 #editor {
-  width: 75vw;
-  height: 100vh;
-  display: inline-block;
-  float: left; }
+  width: 100%;
+  height: 100%;
+  display: block; }
 
-#sidebar {
-  width: 20vw;
-  height: 100vh;
-  display: inline-block;
-  float: right; }
+#props-sidebar {
+  padding-top: 30px;
+  width: 20%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  right: -20%;
+  top: 0;
+  z-index: 999;
+  background: white;
+  text-align: center; }
+
+#props-sidebar h2 {
+  color: #ffcf00;
+  font-size: 3em; }
+
+#props-sidebar button {
+  width: 95%;
+  margin: 0 auto;
+  margin-top: 15px;
+  height: 70px; }
+
+#show-extras-sidebar {
+  position: fixed;
+  right: 0;
+  top: 50%; }
+
+#extras-sidebar {
+  padding-top: 30px;
+  width: 20%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  right: -20%;
+  top: 0;
+  z-index: 999;
+  background: white;
+  text-align: center; }
+
+#extras-sidebar h2 {
+  color: #ffcf00;
+  font-size: 3em; }
+
+#extras-sidebar button {
+  width: 95%;
+  margin: 0 auto;
+  margin-top: 15px;
+  height: 70px; }
+
+#show-props-sidebar {
+  position: fixed;
+  right: 0;
+  top: 45%; }
 
 /*# sourceMappingURL=style.css.map */

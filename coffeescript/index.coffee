@@ -5,6 +5,12 @@ scene = new THREE.Scene()
 clock = new THREE.Clock()
 mouse = new THREE.Vector2()
 
+#ui vars
+sidebarShown = false
+
+#drone structure
+props = []
+
 # scene objects list
 objects = []
 selection = null
@@ -40,15 +46,19 @@ scene.add directionalLight
 #STL loader
 loader = new THREE.STLLoader()
 loader.crossOrigin = ''
-loader.load "models/core.stl", (geometry) ->
-  mat = new THREE.MeshStandardMaterial({color: 0xfcde00})
-  group = new THREE.Mesh(geometry, mat)
-  group.rotation.x = -0.5 * Math.PI
-  group.rotation.z = Math.PI/6
-  group.scale.set(0.1, 0.1, 0.1)
-  scene.add(group)
-  objects.push group
-  group.position.set(0,1,0)
+
+addCore = ->
+  loader.load "models/core.stl", (geometry) ->
+    mat = new THREE.MeshStandardMaterial({color: 0xfcde00})
+    core = new THREE.Mesh(geometry, mat)
+    core.rotation.x = -0.5 * Math.PI
+    core.rotation.z = Math.PI/6
+    core.scale.set(0.1, 0.1, 0.1)
+    scene.add(core)
+    objects.push core
+    core.position.set(0,1,0)
+
+addCore()
 
 render = ->
   requestAnimationFrame render
@@ -57,15 +67,38 @@ render = ->
 render()
 
 document.getElementById('add4props').addEventListener "mousedown", (event) ->
+  disableButton(4)
+  clearProps()
   addSymmetricProps(2, 0, 60)
   addSymmetricProps(1, 60)
   addSymmetricProps(1, 240)
 
 document.getElementById('add3props').addEventListener "mousedown", (event) ->
+  disableButton(3)
+  clearProps()
   addSymmetricProps(3)
 
 document.getElementById('add6props').addEventListener "mousedown", (event) ->
+  disableButton(6)
+  clearProps()
   addSymmetricProps(6)
+
+disableButton = (n) ->
+  $('#add4props').prop 'disabled', false
+  $('#add3props').prop 'disabled', false
+  $('#add6props').prop 'disabled', false
+  $('#add'+n+'props').prop 'disabled', true
+
+clearProps = ->
+  i = 0
+  while i < props.length
+    index = scene.children.indexOf props[i]
+    scene.remove scene.children[index]
+
+    index = objects.indexOf props[i]
+    objects.splice index, 1
+    i++
+  props = []
 
 addSymmetricProps = (num, offset, rotateTo) ->
   offset ?= 0
@@ -83,6 +116,8 @@ addSymmetricProps = (num, offset, rotateTo) ->
       pivot.add( group )
       pivot.rotation.y = (360/num + offset) / 180 * Math.PI * i++
       scene.add( pivot )
+      props.push pivot
+      objects.push pivot
 
 renderer.domElement.addEventListener 'mousedown', (event) ->
   event.preventDefault()
@@ -102,5 +137,27 @@ renderer.domElement.addEventListener 'mousedown', (event) ->
     selection.add selectionMesh
   else
     if selection != null
-      selection.remove selectionMesh
+      C selectionMesh
       selection = null
+
+toggleSidebar = (name) ->
+  $( "#show-" + name + "-sidebar" ).click ->
+    if sidebarShown
+      sidebarShown = false
+      $( "#" + name + "-sidebar" ).animate {
+        right: "-20%"
+      }, { duration: 1000, queue:false }, ->
+      $( "#show-" + name + "-sidebar" ).animate {
+        right: 0
+      }, { duration: 1000, queue:false }, ->
+    else
+      sidebarShown = true
+      $( "#" + name + "-sidebar" ).animate {
+        right: 0
+      }, { duration: 1000, queue:false }, ->
+      $( "#show-" + name + "-sidebar" ).animate {
+        right: "20%"
+      }, { duration: 1000, queue:false }, ->
+
+toggleSidebar('props')
+toggleSidebar('extras')
