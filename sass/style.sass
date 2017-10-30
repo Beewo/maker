@@ -36,9 +36,24 @@ button
   height: 70px
 
 #show-extras-sidebar
+  top: 50%
+
+#show-props-sidebar
+  top: 38%
+
+#show-extras-sidebar, #show-props-sidebar
   position: fixed
   right: 0
-  top: 50%
+  border-bottom-left-radius: 50%
+  border-top-left-radius: 50%
+  border: none
+  height: 5% * 2
+  width: 5%
+  background: white
+
+#show-extras-sidebar:hover, #show-props-sidebar:hover
+  background: white
+  color: #ffcf00
 
 #extras-sidebar
   padding-top: 30px
@@ -61,8 +76,3 @@ button
   margin: 0 auto
   margin-top: 15px
   height: 70px
-
-#show-props-sidebar
-  position: fixed
-  right: 0
-  top: 45%
