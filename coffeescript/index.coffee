@@ -15,13 +15,13 @@ props = []
 objects = []
 selection = null
 selectionMesh = null
-selectionMaterial = new THREE.MeshBasicMaterial { color: 0xff0000, side: THREE.BackSide }
+selectionMaterial = new THREE.MeshBasicMaterial { color: 0xffffff, wireframe: true }
 raycaster = new THREE.Raycaster()
 projector = new THREE.Projector()
 
 renderer.setPixelRatio window.devicePixelRatio
 renderer.setSize window.innerWidth, window.innerHeight
-renderer.setClearColor 0x3d3d3d, 1.0
+renderer.setClearColor 0xffffff, 1.0
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFShadowMap
 $('#editor').append renderer.domElement
@@ -37,7 +37,7 @@ controls.enableZoom = true
 controls.addEventListener 'change', -> render
 
 # lightning
-directionalLight = new THREE.DirectionalLight( 0xffffff, 1, 100 )
+directionalLight = new THREE.DirectionalLight( 0xffffff, 2, 100 )
 directionalLight.position.set 1, 1, 1
 directionalLight.castShadow = true
 
@@ -117,7 +117,7 @@ addSymmetricProps = (num, offset, rotateTo) ->
       pivot.rotation.y = (360/num + offset) / 180 * Math.PI * i++
       scene.add( pivot )
       props.push pivot
-      objects.push pivot
+      objects.push group
 
 renderer.domElement.addEventListener 'mousedown', (event) ->
   event.preventDefault()
@@ -125,19 +125,17 @@ renderer.domElement.addEventListener 'mousedown', (event) ->
   mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1
   raycaster.setFromCamera mouse, camera
   intersects = raycaster.intersectObjects(objects)
-  console.log(objects)
-  console.log(intersects)
   if intersects.length > 0
+    if selection != null
+      selection.remove selectionMesh
     selection = intersects[0].object
-
     # highlight
     selectionMesh = new THREE.Mesh( selection.geometry, selectionMaterial )
     selectionMesh.position = selection.position
-    selectionMesh.scale.multiplyScalar(1.05)
     selection.add selectionMesh
   else
     if selection != null
-      C selectionMesh
+      selection.remove selectionMesh
       selection = null
 
 toggleSidebar = (name) ->
@@ -146,18 +144,18 @@ toggleSidebar = (name) ->
       sidebarShown = false
       $( "#" + name + "-sidebar" ).animate {
         right: "-20%"
-      }, { duration: 1000, queue:false }, ->
+      }, { duration: 500, queue:false }, ->
       $( "#show-" + name + "-sidebar" ).animate {
         right: 0
-      }, { duration: 1000, queue:false }, ->
+      }, { duration: 500, queue:false }, ->
     else
       sidebarShown = true
       $( "#" + name + "-sidebar" ).animate {
         right: 0
-      }, { duration: 1000, queue:false }, ->
+      }, { duration: 500, queue:false }, ->
       $( "#show-" + name + "-sidebar" ).animate {
         right: "20%"
-      }, { duration: 1000, queue:false }, ->
+      }, { duration: 500, queue:false }, ->
 
 toggleSidebar('props')
 toggleSidebar('extras')

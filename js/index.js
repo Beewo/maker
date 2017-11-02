@@ -26,8 +26,8 @@
   selectionMesh = null;
 
   selectionMaterial = new THREE.MeshBasicMaterial({
-    color: 0xff0000,
-    side: THREE.BackSide
+    color: 0xffffff,
+    wireframe: true
   });
 
   raycaster = new THREE.Raycaster();
@@ -38,7 +38,7 @@
 
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-  renderer.setClearColor(0x3d3d3d, 1.0);
+  renderer.setClearColor(0xffffff, 1.0);
 
   renderer.shadowMap.enabled = true;
 
@@ -60,7 +60,7 @@
     return render;
   });
 
-  directionalLight = new THREE.DirectionalLight(0xffffff, 1, 100);
+  directionalLight = new THREE.DirectionalLight(0xffffff, 2, 100);
 
   directionalLight.position.set(1, 1, 1);
 
@@ -162,7 +162,7 @@
         pivot.rotation.y = (360 / num + offset) / 180 * Math.PI * i++;
         scene.add(pivot);
         props.push(pivot);
-        results.push(objects.push(pivot));
+        results.push(objects.push(group));
       }
       return results;
     });
@@ -175,17 +175,17 @@
     mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects(objects);
-    console.log(objects);
-    console.log(intersects);
     if (intersects.length > 0) {
+      if (selection !== null) {
+        selection.remove(selectionMesh);
+      }
       selection = intersects[0].object;
       selectionMesh = new THREE.Mesh(selection.geometry, selectionMaterial);
       selectionMesh.position = selection.position;
-      selectionMesh.scale.multiplyScalar(1.05);
       return selection.add(selectionMesh);
     } else {
       if (selection !== null) {
-        C(selectionMesh);
+        selection.remove(selectionMesh);
         return selection = null;
       }
     }
@@ -198,13 +198,13 @@
         $("#" + name + "-sidebar").animate({
           right: "-20%"
         }, {
-          duration: 1000,
+          duration: 500,
           queue: false
         }, function() {});
         return $("#show-" + name + "-sidebar").animate({
           right: 0
         }, {
-          duration: 1000,
+          duration: 500,
           queue: false
         }, function() {});
       } else {
@@ -212,13 +212,13 @@
         $("#" + name + "-sidebar").animate({
           right: 0
         }, {
-          duration: 1000,
+          duration: 500,
           queue: false
         }, function() {});
         return $("#show-" + name + "-sidebar").animate({
           right: "20%"
         }, {
-          duration: 1000,
+          duration: 500,
           queue: false
         }, function() {});
       }
