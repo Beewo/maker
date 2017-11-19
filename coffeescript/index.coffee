@@ -86,6 +86,7 @@ render()
 document.getElementById('add4props').addEventListener "mousedown", (event) ->
   disableButton(4)
   clearProps()
+  clearModules()
   addSymmetricProps(2, 0, 60)
   addSymmetricProps(1, 60)
   addSymmetricProps(1, 240)
@@ -93,16 +94,17 @@ document.getElementById('add4props').addEventListener "mousedown", (event) ->
 document.getElementById('add3props').addEventListener "mousedown", (event) ->
   disableButton(3)
   clearProps()
+  clearModules()
   addSymmetricProps(3)
 
 document.getElementById('add6props').addEventListener "mousedown", (event) ->
   disableButton(6)
   clearProps()
+  clearModules()
   addSymmetricProps(6)
 
 
 document.getElementById('add-random').addEventListener "mousedown", (event) ->
-  console.log("Añadiendo mierda")
   addrandomModule()
 
 
@@ -123,25 +125,57 @@ clearProps = ->
     i++
   props = []
 
+clearModules = ->
+  i = 0
+  while i < modules.length
+    index = scene.children.indexOf modules[i]
+    scene.remove scene.children[index]
+
+    index = objects.indexOf modules[i]
+    objects.splice index, 1
+    i++
+  modules = []
+
 
 addrandomModule = () ->  
   loader.load "models/testmodule.stl", (geometry) ->
-
-    console.log(props.length)
     console.log(modules.length)
 
-    mat = new THREE.MeshStandardMaterial({color: 0xfcde00})
-    group = new THREE.Mesh(geometry, mat)
-    group.scale.set(0.1, 0.1, 0.1)
-    group.rotation.x = -0.5 * Math.PI
-    group.rotation.z = (-30) / 180 * Math.PI
-    group.position.set(0,1,-10)
-    pivot = new THREE.Object3D()
-    pivot.rotation.y = (360/3*(modules.length+1)) / 180 * Math.PI
-    pivot.add( group )    
-    scene.add( pivot )
-    modules.push pivot
-    objects.push group
+    angle = -30
+    position = -10
+    position_x = 0
+    num_modules = 3
+
+    if props.length == 3
+      angle = -30
+      position = -10
+      num_modules = 3
+    else if props.length == 6
+      angle = 30
+      position = -20
+      num_modules = 6
+    else
+      num_modules = 2
+      position = -10
+      position_x = 20
+
+    if modules.length >= num_modules
+      alert "With this model you only can add "+num_modules+" modules"
+    else
+      mat = new THREE.MeshStandardMaterial({color: 0xfcde00})
+      group = new THREE.Mesh(geometry, mat)
+      group.scale.set(0.1, 0.1, 0.1)
+      group.rotation.x = -0.5 * Math.PI
+
+      group.rotation.z = angle / 180 * Math.PI
+      group.position.set(position_x,1,position)
+
+      pivot = new THREE.Object3D()
+      pivot.rotation.y = (360/(num_modules)*(modules.length+1)) / 180 * Math.PI
+      pivot.add( group )    
+      scene.add( pivot )
+      modules.push pivot
+      objects.push group
 
 addSymmetricProps = (num, offset, rotateTo) ->
   offset ?= 0
