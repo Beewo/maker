@@ -1,15 +1,16 @@
 # basic components
 camera = new THREE.PerspectiveCamera 75, window.innerWidth / window.innerHeight, 0.1, 1000
 renderer = new THREE.WebGLRenderer antialias: true, alpha: true
+
 scene = new THREE.Scene()
 clock = new THREE.Clock()
 mouse = new THREE.Vector2()
 
 #ui vars
 sidebarShown = false
-
 #drone structure
 props = []
+modules = []
 
 # scene objects list
 objects = []
@@ -42,6 +43,22 @@ directionalLight.position.set 1, 1, 1
 directionalLight.castShadow = true
 
 scene.add directionalLight
+
+tanFOV = Math.tan( ( ( Math.PI / 180 ) * camera.fov / 2 ) )
+windowHeight = window.innerHeight
+
+window.addEventListener "resize", (event) => this.onWindowResize(event)
+
+this.onWindowResize = (event) ->
+
+    camera.aspect = window.innerWidth / window.innerHeight
+    camera.fov = ( 360 / Math.PI ) * Math.atan( tanFOV * ( window.innerHeight / windowHeight ) )
+    
+    camera.updateProjectionMatrix()
+    camera.lookAt( scene.position )
+
+    renderer.setSize( window.innerWidth, window.innerHeight )
+    renderer.render( scene, camera )
 
 #STL loader
 loader = new THREE.STLLoader()
@@ -83,6 +100,12 @@ document.getElementById('add6props').addEventListener "mousedown", (event) ->
   clearProps()
   addSymmetricProps(6)
 
+
+document.getElementById('add-random').addEventListener "mousedown", (event) ->
+  console.log("Añadiendo mierda")
+  addrandomModule()
+
+
 disableButton = (n) ->
   $('#add4props').prop 'disabled', false
   $('#add3props').prop 'disabled', false
@@ -99,6 +122,26 @@ clearProps = ->
     objects.splice index, 1
     i++
   props = []
+
+
+addrandomModule = () ->  
+  loader.load "models/testmodule.stl", (geometry) ->
+
+    console.log(props.length)
+    console.log(modules.length)
+
+    mat = new THREE.MeshStandardMaterial({color: 0xfcde00})
+    group = new THREE.Mesh(geometry, mat)
+    group.scale.set(0.1, 0.1, 0.1)
+    group.rotation.x = -0.5 * Math.PI
+    group.rotation.z = (-30) / 180 * Math.PI
+    group.position.set(0,1,-10)
+    pivot = new THREE.Object3D()
+    pivot.rotation.y = (360/3*(modules.length+1)) / 180 * Math.PI
+    pivot.add( group )    
+    scene.add( pivot )
+    modules.push pivot
+    objects.push group
 
 addSymmetricProps = (num, offset, rotateTo) ->
   offset ?= 0
