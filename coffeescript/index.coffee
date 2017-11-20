@@ -11,12 +11,16 @@ sidebarShown = false
 #drone structure
 props = []
 modules = []
+prompted_modules = []
 
 # scene objects list
 objects = []
 selection = null
-selectionMesh = null
-selectionMaterial = new THREE.MeshPhongMaterial { color: 0x40e0d0 }
+
+selectionMaterial = new THREE.MeshStandardMaterial { color: 0x40e0d0 }
+mat = new THREE.MeshStandardMaterial {color: 0xfcde00}
+promptedMaterial = new THREE.MeshStandardMaterial {color: 0x888888, transparent: true, opacity: 0.6}
+
 raycaster = new THREE.Raycaster()
 projector = new THREE.Projector()
 
@@ -43,6 +47,8 @@ directionalLight.position.set 1, 1, 1
 directionalLight.castShadow = true
 
 scene.add directionalLight
+
+
 
 # fog
 scene.fog = new THREE.Fog(0xc1e4e8, 0.015, 100);
@@ -85,28 +91,35 @@ render = ->
 render()
 
 document.getElementById('add4props').addEventListener "mousedown", (event) ->
+  enableStep2()
   disableButton(4)
   clearProps()
   clearModules()
+  clearPromptedModules()
   addSymmetricProps(2, 0, 60)
   addSymmetricProps(1, 60)
   addSymmetricProps(1, 240)
 
 document.getElementById('add3props').addEventListener "mousedown", (event) ->
+  enableStep2()
   disableButton(3)
   clearProps()
   clearModules()
+  clearPromptedModules()
   addSymmetricProps(3)
 
 document.getElementById('add6props').addEventListener "mousedown", (event) ->
+  enableStep2()
   disableButton(6)
   clearProps()
   clearModules()
+  clearPromptedModules()
   addSymmetricProps(6)
 
 
 document.getElementById('add-random').addEventListener "mousedown", (event) ->
-  addrandomModule()
+  clearPromptedModules()
+  promptModuleSlots("models/testmodule.stl")
 
 disableButton = (n) ->
   $('#add4props').prop 'disabled', false
@@ -114,10 +127,13 @@ disableButton = (n) ->
   $('#add6props').prop 'disabled', false
   $('#add'+n+'props').prop 'disabled', true
 
+enableStep2 = () ->
+  $('#add-random').prop 'disabled', false
+
 clearProps = ->
   i = 0
   while i < props.length
-    index = scene.children.indexOf props[i]
+    index = scene.children.indexOf props[i].parent
     scene.remove scene.children[index]
 
     index = objects.indexOf props[i]
@@ -128,7 +144,7 @@ clearProps = ->
 clearModules = ->
   i = 0
   while i < modules.length
-    index = scene.children.indexOf modules[i]
+    index = scene.children.indexOf modules[i].parent
     scene.remove scene.children[index]
 
     index = objects.indexOf modules[i]
@@ -136,14 +152,22 @@ clearModules = ->
     i++
   modules = []
 
-addrandomModule = () ->  
-  loader.load "models/testmodule.stl", (geometry) ->
-    console.log(modules.length)
+clearPromptedModules = ->
+  i = 0
+  while i < prompted_modules.length
+    index = scene.children.indexOf prompted_modules[i].parent
+    scene.remove scene.children[index]
 
+    index = objects.indexOf prompted_modules[i]
+    objects.splice index, 1
+    i++
+  prompted_modules = []
+
+promptModuleSlots = (model) ->
+  loader.load model, (geometry) ->
     angle = -30
     position = -10
     position_x = 0
-    num_modules = 3
 
     if props.length == 3
       angle = -30
@@ -158,11 +182,8 @@ addrandomModule = () ->
       position = -10
       position_x = 20
 
-    if modules.length >= num_modules
-      alert "You can only add upto " + num_modules + " modules when using " + props.length + " props"
-    else
-      mat = new THREE.MeshStandardMaterial({color: 0xfcde00})
-      group = new THREE.Mesh(geometry, mat)
+    while prompted_modules.length < num_modules
+      group = new THREE.Mesh(geometry, promptedMaterial)
       group.scale.set(0.1, 0.1, 0.1)
       group.rotation.x = -0.5 * Math.PI
 
@@ -170,17 +191,21 @@ addrandomModule = () ->
       group.position.set(position_x,1,position)
 
       pivot = new THREE.Object3D()
-      pivot.rotation.y = (360/(num_modules)*(modules.length+1)) / 180 * Math.PI
+      pivot.rotation.y = (360/(num_modules)*(prompted_modules.length+1)) / 180 * Math.PI
       pivot.add( group )    
       scene.add( pivot )
-      modules.push pivot
+      prompted_modules.push group
       objects.push group
+
+addModule = (object) -> 
+  object.material = mat
+  modules.push object
+  prompted_modules.remove object
 
 addSymmetricProps = (num, offset, rotateTo) ->
   offset ?= 0
   rotateTo ?= 0
   loader.load "models/prop.stl", (geometry) ->
-    mat = new THREE.MeshStandardMaterial({color: 0xfcde00})
     i = 1
     while i <= num
       group = new THREE.Mesh(geometry, mat)
@@ -192,7 +217,7 @@ addSymmetricProps = (num, offset, rotateTo) ->
       pivot.add( group )
       pivot.rotation.y = (360/num + offset) / 180 * Math.PI * i++
       scene.add( pivot )
-      props.push pivot
+      props.push group
       objects.push group
 
 renderer.domElement.addEventListener 'mousedown', (event) ->
@@ -202,19 +227,25 @@ renderer.domElement.addEventListener 'mousedown', (event) ->
   raycaster.setFromCamera mouse, camera
   intersects = raycaster.intersectObjects(objects)
   if intersects.length > 0
-    if selection != null
-      selection.remove selectionMesh
-    selection = intersects[0].object
-    # highlight
-    selectionMesh = new THREE.Mesh( selection.geometry, selectionMaterial )
-    selectionMesh.position = selection.position
-    selection.add selectionMesh
+    selected = intersects[0].object
+    if selection != null # if there was an object previously selected
+      selection.material = mat # we deselect it
+      selection = null
+    # check if the user is adding a new module
+    if prompted_modules.indexOf(selected) >= 0
+      console.log("modulo")
+      addModule(selected)
+    else
+      selection = selected
+      # highlight
+      console.log("pieza")
+      selection.material = selectionMaterial
   else
     if selection != null
-      selection.remove selectionMesh
-      selection = null
+      selection.material = mat
 
 toggleSidebar = (name) ->
+  clearPromptedModules()
   $( "#show-" + name + "-sidebar" ).click ->
     if sidebarShown
       sidebarShown = false
