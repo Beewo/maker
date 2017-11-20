@@ -6,9 +6,10 @@ scene = new THREE.Scene()
 clock = new THREE.Clock()
 mouse = new THREE.Vector2()
 
-#ui vars
+# ui vars
 sidebarShown = false
-#drone structure
+
+# drone structure
 props = []
 modules = []
 prompted_modules = []
@@ -57,7 +58,10 @@ scene.fog = new THREE.Fog(0xc1e4e8, 0.015, 100);
 tanFOV = Math.tan( ( ( Math.PI / 180 ) * camera.fov / 2 ) )
 windowHeight = window.innerHeight
 
-window.addEventListener "resize", (event) => this.onWindowResize(event)
+
+window.addEventListener "mousemove",(event) -> this.onMouseMove(event)
+
+window.addEventListener "resize", (event) -> this.onWindowResize(event)
 
 this.onWindowResize = (event) ->
     camera.aspect = window.innerWidth / window.innerHeight
@@ -66,6 +70,13 @@ this.onWindowResize = (event) ->
     camera.lookAt( scene.position )
     renderer.setSize( window.innerWidth, window.innerHeight )
     renderer.render( scene, camera )
+
+this.onMouseMove = (event) -> 
+    
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+
 
 #STL loader
 loader = new THREE.STLLoader()
@@ -87,6 +98,7 @@ addCore()
 render = ->
   requestAnimationFrame render
   renderer.render scene, camera
+  raycaster.setFromCamera mouse, camera 
 
 render()
 
@@ -183,7 +195,7 @@ promptModuleSlots = (model) ->
     else
       num_modules = 2
       position = -10
-      position_x = 20
+      position_x = 17
 
     while prompted_modules.length < num_modules
       group = new THREE.Mesh(geometry, promptedMaterial)
@@ -223,11 +235,12 @@ addSymmetricProps = (num, offset, rotateTo) ->
       props.push group
       objects.push group
 
-renderer.domElement.addEventListener 'mousedown', (event) ->
+
+renderer.domElement.addEventListener 'mousedown', (event) ->  
   event.preventDefault()
   mouse.x = event.clientX / renderer.domElement.clientWidth * 2 - 1
   mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1
-  raycaster.setFromCamera mouse, camera
+  raycaster.setFromCamera mouse, camera  
   intersects = raycaster.intersectObjects(objects)
   if intersects.length > 0
     selected = intersects[0].object
@@ -235,14 +248,17 @@ renderer.domElement.addEventListener 'mousedown', (event) ->
       selection.material = mat # we deselect it
       selection = null
     # check if the user is adding a new module
-    if prompted_modules.indexOf(selected) >= 0
-      console.log("modulo")
+    if prompted_modules.indexOf(selected) >= 0      
       addModule(selected)
-    else
+    else      
       selection = selected
-      # highlight
-      console.log("pieza")
+      # highlight      
       selection.material = selectionMaterial
+      if event.which == 3
+        setTimeout( ->
+          alert "Do you want to delete this part?"
+        , 250)
+        
   else
     if selection != null
       selection.material = mat
