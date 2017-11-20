@@ -44,19 +44,17 @@ directionalLight.castShadow = true
 
 scene.add directionalLight
 
+# resizable 3d view
 tanFOV = Math.tan( ( ( Math.PI / 180 ) * camera.fov / 2 ) )
 windowHeight = window.innerHeight
 
 window.addEventListener "resize", (event) => this.onWindowResize(event)
 
 this.onWindowResize = (event) ->
-
     camera.aspect = window.innerWidth / window.innerHeight
     camera.fov = ( 360 / Math.PI ) * Math.atan( tanFOV * ( window.innerHeight / windowHeight ) )
-    
     camera.updateProjectionMatrix()
     camera.lookAt( scene.position )
-
     renderer.setSize( window.innerWidth, window.innerHeight )
     renderer.render( scene, camera )
 
@@ -107,7 +105,6 @@ document.getElementById('add6props').addEventListener "mousedown", (event) ->
 document.getElementById('add-random').addEventListener "mousedown", (event) ->
   addrandomModule()
 
-
 disableButton = (n) ->
   $('#add4props').prop 'disabled', false
   $('#add3props').prop 'disabled', false
@@ -136,7 +133,6 @@ clearModules = ->
     i++
   modules = []
 
-
 addrandomModule = () ->  
   loader.load "models/testmodule.stl", (geometry) ->
     console.log(modules.length)
@@ -160,7 +156,7 @@ addrandomModule = () ->
       position_x = 20
 
     if modules.length >= num_modules
-      alert "With this model you only can add "+num_modules+" modules"
+      alert "You can only add upto " + num_modules + " modules when using " + props.length + " props"
     else
       mat = new THREE.MeshStandardMaterial({color: 0xfcde00})
       group = new THREE.Mesh(geometry, mat)
