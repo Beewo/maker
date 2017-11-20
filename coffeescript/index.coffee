@@ -121,6 +121,9 @@ document.getElementById('add-random').addEventListener "mousedown", (event) ->
   clearPromptedModules()
   promptModuleSlots("models/testmodule.stl")
 
+document.getElementById('save').addEventListener "mousedown", (event) ->
+  saveDrone()
+
 disableButton = (n) ->
   $('#add4props').prop 'disabled', false
   $('#add3props').prop 'disabled', false
@@ -266,3 +269,9 @@ toggleSidebar = (name) ->
 
 toggleSidebar('props')
 toggleSidebar('extras')
+toggleSidebar('validation')
+
+
+saveDrone = () ->
+  # TODO
+   

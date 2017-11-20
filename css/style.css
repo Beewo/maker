@@ -50,13 +50,42 @@ button {
   border-radius: 10px;
   background: white; }
 
+#validation-sidebar {
+  padding-top: 30px;
+  width: 20%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  right: -20%;
+  top: 0;
+  z-index: 999;
+  background: #ffcf00;
+  text-align: center;
+  border-left: 3px solid #ffcf00; }
+
+#validation-sidebar h2 {
+  color: white;
+  font-size: 3em; }
+
+#validation-sidebar button {
+  width: 95%;
+  margin: 0 auto;
+  margin-top: 15px;
+  height: 70px;
+  border: 3px solid #ffcf00;
+  border-radius: 10px;
+  background: white; }
+
 #show-extras-sidebar {
   top: 50%; }
 
 #show-props-sidebar {
   top: 38%; }
 
-#show-extras-sidebar, #show-props-sidebar {
+#show-validation-sidebar {
+  top: 62%; }
+
+#show-extras-sidebar, #show-props-sidebar, #show-validation-sidebar {
   position: fixed;
   padding-left: 1em;
   right: 0;
@@ -71,7 +100,7 @@ button {
   border-top: 3px solid #ffcf00;
   border-right: 3px solid white; }
 
-#show-extras-sidebar:hover, #show-props-sidebar:hover {
+#show-extras-sidebar:hover, #show-props-sidebar:hover, #show-validation-sidebar:hover {
   background: #ffcf00;
   color: white; }
 
