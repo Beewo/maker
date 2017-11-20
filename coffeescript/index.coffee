@@ -44,6 +44,9 @@ directionalLight.castShadow = true
 
 scene.add directionalLight
 
+# fog
+scene.fog = new THREE.Fog(0xc1e4e8, 0.015, 100);
+
 # resizable 3d view
 tanFOV = Math.tan( ( ( Math.PI / 180 ) * camera.fov / 2 ) )
 windowHeight = window.innerHeight
