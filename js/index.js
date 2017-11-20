@@ -31,9 +31,8 @@
 
   selectionMesh = null;
 
-  selectionMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    wireframe: true
+  selectionMaterial = new THREE.MeshPhongMaterial({
+    color: 0x40e0d0
   });
 
   raycaster = new THREE.Raycaster();
