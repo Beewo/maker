@@ -17,6 +17,7 @@ prompted_modules = []
 # scene objects list
 objects = []
 selection = null
+arrow = null
 
 selectionMaterial = new THREE.MeshStandardMaterial { color: 0x40e0d0 }
 mat = new THREE.MeshStandardMaterial {color: 0xfcde00}
@@ -73,8 +74,9 @@ this.onWindowResize = (event) ->
 
 this.onMouseMove = (event) -> 
     
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 -1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1.15;
+    #console.log(mouse.x+" "+mouse.y)
 
 
 
@@ -232,15 +234,18 @@ addSymmetricProps = (num, offset, rotateTo) ->
       pivot.add( group )
       pivot.rotation.y = (360/num + offset) / 180 * Math.PI * i++
       scene.add( pivot )
+      box = new THREE.BoxHelper( pivot, 0xffff00 )
+      scene.add( box )
       props.push group
       objects.push group
 
 
 renderer.domElement.addEventListener 'mousedown', (event) ->  
   event.preventDefault()
-  mouse.x = event.clientX / renderer.domElement.clientWidth * 2 - 1
-  mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1
   raycaster.setFromCamera mouse, camera  
+  scene.remove ( arrow );
+  arrow = new THREE.ArrowHelper( raycaster.ray.direction, raycaster.ray.origin, 100, Math.random() * 0xffffff )
+  scene.add( arrow );
   intersects = raycaster.intersectObjects(objects)
   if intersects.length > 0
     selected = intersects[0].object
