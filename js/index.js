@@ -388,7 +388,7 @@
   });
 
   validator = function() {
-    var battery_life, engine_max_corr, engine_rpm, engine_vol, engines_weight, esc_weight, lift_weight_prop, meter_cam_module, meter_core, meter_module, meter_prop, modules_time, modules_weight, power_prop, props_time, props_weight, time_cam_module, time_core, time_module, time_prop, total_lift_w, total_power, total_time, total_weight, weight_cam_module, weight_core, weight_engine, weight_esc, weight_module, weight_prop;
+    var battery_life, engine_max_corr, engine_rpm, engine_vol, engines_weight, esc_weight, i, lift_weight_prop, meter_cam_module, meter_core, meter_module, meter_prop, modules_time, modules_weight, power_prop, props_time, props_weight, time_cam_module, time_core, time_module, time_prop, total_lift_w, total_power, total_time, total_weight, weight_cam_module, weight_core, weight_engine, weight_esc, weight_module, weight_prop;
     weight_core = 74; //grams
     weight_prop = 51;
     weight_module = 24;
@@ -419,6 +419,11 @@
     total_power = props.length * power_prop;
     total_time = props_time + modules_time + time_core;
     battery_life = (5500 / 1000) / (engine_max_corr * props.length) * 60;
+    i = 0;
+    while (i < modules.length) {
+      console.log(modules[i].position);
+      i++;
+    }
     return alert("The model is validate \n" + "The weight of the drone is: " + Math.round(total_weight) + " grams \n" + "The drone can lift this weight: " + Math.round(total_lift_w) + " grams\n" + "The power of the drone is: " + total_power + " whatts \n" + "The estimated time for printing the drone is: " + Math.round(total_time / 60) + " hours \n" + "The duration of battery with 11.1 v and 5500mah is: " + Math.round(battery_life) + " minutes\n");
   };
 

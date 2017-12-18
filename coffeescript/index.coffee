@@ -331,6 +331,11 @@ validator = () ->
   total_power    = props.length   * power_prop
   total_time     = props_time     + modules_time   + time_core
   battery_life   = (5500/1000)/(engine_max_corr*props.length) * 60 
+
+  i = 0
+  while i < modules.length
+    console.log(modules[i].position)
+    i++
   
   
   alert "The model is validate \n"+ 
