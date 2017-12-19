@@ -331,12 +331,26 @@ validator = () ->
   total_power    = props.length   * power_prop
   total_time     = props_time     + modules_time   + time_core
   battery_life   = (5500/1000)/(engine_max_corr*props.length) * 60 
-
+  
+  module_x_distribution = 0
+  module_z_distribution = 0
   i = 0
   while i < modules.length
-    console.log(modules[i].position)
+    #console.log(modules[i].getWorldPosition();)
+    module_x_distribution += Math.round(modules[i].getWorldPosition().x)
+    module_z_distribution += Math.round(modules[i].getWorldPosition().z)
     i++
-  
+  x_module = (Math.round(module_x_distribution))
+  z_module = (Math.round(module_z_distribution))
+  module = x_module * x_module
+  module = module + z_module * z_module
+  module = Math.sqrt(module)
+
+  final  = new THREE.Vector3( x_module/module, 0, z_module/module );
+  origin = new THREE.Vector3( 0, 0, 0 );
+
+  arrow_module = new THREE.ArrowHelper( final, origin, 100, Math.random() * 0xffffff )
+  scene.add( arrow_module );
   
   alert "The model is validate \n"+ 
         "The weight of the drone is: " + Math.round(total_weight) + " grams \n" +

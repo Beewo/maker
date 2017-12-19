@@ -388,7 +388,7 @@
   });
 
   validator = function() {
-    var battery_life, engine_max_corr, engine_rpm, engine_vol, engines_weight, esc_weight, i, lift_weight_prop, meter_cam_module, meter_core, meter_module, meter_prop, modules_time, modules_weight, power_prop, props_time, props_weight, time_cam_module, time_core, time_module, time_prop, total_lift_w, total_power, total_time, total_weight, weight_cam_module, weight_core, weight_engine, weight_esc, weight_module, weight_prop;
+    var arrow_module, battery_life, engine_max_corr, engine_rpm, engine_vol, engines_weight, esc_weight, final, i, lift_weight_prop, meter_cam_module, meter_core, meter_module, meter_prop, module, module_x_distribution, module_z_distribution, modules_time, modules_weight, origin, power_prop, props_time, props_weight, time_cam_module, time_core, time_module, time_prop, total_lift_w, total_power, total_time, total_weight, weight_cam_module, weight_core, weight_engine, weight_esc, weight_module, weight_prop, x_module, z_module;
     weight_core = 74; //grams
     weight_prop = 51;
     weight_module = 24;
@@ -419,11 +419,24 @@
     total_power = props.length * power_prop;
     total_time = props_time + modules_time + time_core;
     battery_life = (5500 / 1000) / (engine_max_corr * props.length) * 60;
+    module_x_distribution = 0;
+    module_z_distribution = 0;
     i = 0;
     while (i < modules.length) {
-      console.log(modules[i].position);
+      //console.log(modules[i].getWorldPosition();)
+      module_x_distribution += Math.round(modules[i].getWorldPosition().x);
+      module_z_distribution += Math.round(modules[i].getWorldPosition().z);
       i++;
     }
+    x_module = Math.round(module_x_distribution);
+    z_module = Math.round(module_z_distribution);
+    module = x_module * x_module;
+    module = module + z_module * z_module;
+    module = Math.sqrt(module);
+    final = new THREE.Vector3(x_module / module, 0, z_module / module);
+    origin = new THREE.Vector3(0, 0, 0);
+    arrow_module = new THREE.ArrowHelper(final, origin, 100, Math.random() * 0xffffff);
+    scene.add(arrow_module);
     return alert("The model is validate \n" + "The weight of the drone is: " + Math.round(total_weight) + " grams \n" + "The drone can lift this weight: " + Math.round(total_lift_w) + " grams\n" + "The power of the drone is: " + total_power + " whatts \n" + "The estimated time for printing the drone is: " + Math.round(total_time / 60) + " hours \n" + "The duration of battery with 11.1 v and 5500mah is: " + Math.round(battery_life) + " minutes\n");
   };
 
