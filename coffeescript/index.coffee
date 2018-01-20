@@ -292,6 +292,74 @@ toggleSidebar('props')
 toggleSidebar('extras')
 toggleSidebar('validation')
 
+document.getElementById('validate').addEventListener "mousedown", (event) ->
+  validator()
+
+validator = () ->
+  weight_core      = 74 #grams
+  weight_prop      = 51 
+  weight_module    = 24
+  weight_esc       = 4.535924
+  weight_cam_module= 0
+  weight_engine    = 11.8
+
+  time_core        = 335 #minutes
+  time_prop        = 244
+  time_module      = 103
+  time_cam_module  =   0
+
+  meter_core       = 24.77
+  meter_prop       = 17.17
+  meter_module     =  7.95
+  meter_cam_module =  0
+
+  engine_vol       = 7.4  #volt
+  engine_rpm       = 3100 #revolutions in one minute
+  engine_max_corr  = 7.9  #amperes
+  power_prop       = 58.5 #what
+  lift_weight_prop = 190  #grams
+
+  props_weight   = props.length   * weight_prop
+  props_time     = props.length   * time_prop  
+  modules_weight = modules.length * weight_module
+  modules_time   = modules.length * time_module
+  esc_weight     = props.length   * weight_esc
+  engines_weight = props.length   * weight_engine
+
+  total_lift_w   = props.length   * lift_weight_prop
+  total_weight   = props_weight   + modules_weight + esc_weight + weight_core + engines_weight
+  total_power    = props.length   * power_prop
+  total_time     = props_time     + modules_time   + time_core
+  battery_life   = (5500/1000)/(engine_max_corr*props.length) * 60 
+  
+  module_x_distribution = 0
+  module_z_distribution = 0
+  i = 0
+  while i < modules.length
+    #console.log(modules[i].getWorldPosition();)
+    module_x_distribution += Math.round(modules[i].getWorldPosition().x)
+    module_z_distribution += Math.round(modules[i].getWorldPosition().z)
+    i++
+  x_module = (Math.round(module_x_distribution))
+  z_module = (Math.round(module_z_distribution))
+  module = x_module * x_module
+  module = module + z_module * z_module
+  module = Math.sqrt(module)
+
+  final  = new THREE.Vector3( x_module/module, 0, z_module/module );
+  origin = new THREE.Vector3( 0, 0, 0 );
+
+  arrow_module = new THREE.ArrowHelper( final, origin, 100, Math.random() * 0xffffff )
+  scene.add( arrow_module );
+  
+  alert "The model is validate \n"+ 
+        "The weight of the drone is: " + Math.round(total_weight) + " grams \n" +
+        "The drone can lift this weight: " + Math.round(total_lift_w) + " grams\n"+
+        "The power of the drone is: " + total_power + " whatts \n" +
+        "The estimated time for printing the drone is: " + Math.round(total_time/60)+ " hours \n" + 
+        "The duration of battery with 11.1 v and 5500mah is: " + Math.round(battery_life) + " minutes\n"
+        
+
 
 saveDrone = () ->
   # TODO
