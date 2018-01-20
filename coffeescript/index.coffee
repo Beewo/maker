@@ -51,8 +51,6 @@ directionalLight.castShadow = true
 
 scene.add directionalLight
 
-
-
 # fog
 scene.fog = new THREE.Fog(0xc1e4e8, 0.015, 100);
 
@@ -138,6 +136,10 @@ document.getElementById('add-random').addEventListener "mousedown", (event) ->
 
 document.getElementById('save').addEventListener "mousedown", (event) ->
   saveDrone()
+
+$("#load-input").change () ->
+  loadDrone this.files[0]
+
 
 disableButton = (n) ->
   $('#add4props').prop 'disabled', false
@@ -282,6 +284,9 @@ renderer.domElement.addEventListener 'mousedown', (event) ->
     if selection != null
       selection.material = mat
 
+$('#save').click ->
+
+
 toggleSidebar = (name) ->
   $( "#show-" + name + "-sidebar" ).click ->
     clearPromptedModules()
@@ -387,4 +392,60 @@ validator = () ->
 
 
 saveDrone = () ->
-  # TODO
+  #TODO remove prompted modules
+  sceneJSON = scene.toJSON()
+  propsJSON = []
+  i = 0
+  while i < props.length
+    propsJSON.push props[i].uuid
+    i += 1
+
+  modulesJSON = []
+  i = 0
+  while i < modules.length
+    modulesJSON.push props[i].uuid
+    i += 1
+  file = {scene: sceneJSON, props: propsJSON, modules: modulesJSON}
+  str = JSON.stringify(file)
+  element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(str));
+  element.setAttribute('download', 'design.bee');
+  $('#validation-sidebar').append(element);
+  element.click();
+  $('#validation-sidebar').remove(element);
+
+
+loadDrone = (f) ->
+  #TODO fix orbit controls issue
+  reader = new FileReader()
+  reader.onload = () ->
+    json = JSON.parse reader.result
+    loader = new THREE.ObjectLoader()
+    scene = loader.parse( json.scene )
+    console.log scene
+
+    propsArray   = json.props
+    modulesArray = json.modules
+
+    props = []
+    modules = []
+
+    i = 0
+    while i < scene.children.length
+      obj = scene.children[i]
+      if (obj.type == "Object3D")
+        j = 0
+        while j < obj.children.length
+          mod = obj.children[j]
+          console.log mod.uuid
+          if propsArray.indexOf(mod.uuid) != -1
+            props.push mod
+          else if modulesArray.indexOf mod.uuid != -1
+            modules.push mod
+          j += 1
+      i += 1
+
+    console.log props
+    console.log modules
+
+  render()
