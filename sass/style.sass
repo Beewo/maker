@@ -19,6 +19,21 @@ button
   font-family: 'Varela Round', sans-serif
   font-size: 2em
 
+.modal
+  display: none
+  position: absolute
+  padding: 2em
+  width: 50vw
+  height: 50vh
+  top: 25vh
+  left: 25vw
+  background: white
+  border-radius: 20px
+  -webkit-box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.75)
+  -moz-box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.75)
+  box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.75)
+  z-index: 999
+
 #editor
   width: 100%
   height: 100%
@@ -28,24 +43,29 @@ button
   padding-top: 30px
   width: 20%
   height: 100%
-  display: block
   position: absolute
   right: -20%
   top: 0
-  z-index: 999
+  z-index: 995
   background: #ffcf00
   text-align: center
   border-left : 3px solid #ffcf00
 
 #props-sidebar h2
   color: white
-  font-size: 3em
+  flex-grow: 1
+  font-size: 2em
+
+.toolbar
+  display: flex
+  flex-direction: column
+  height: 95%
 
 #props-sidebar button
+  flex-grow: 6
   width: 95%
   margin: 0 auto
   margin-top: 15px
-  height: 70px
   border: 3px solid #ffcf00
   border-radius: 10px
   background: white
@@ -58,17 +78,18 @@ button
   position: absolute
   right: -20%
   top: 0
-  z-index: 999
+  z-index: 995
   background: #ffcf00
   text-align: center
   border-left : 3px solid #ffcf00
 
 #validation-sidebar h2
   color: white
-  font-size: 3em
+  font-size: 2em
 
 #validation-sidebar button
   width: 95%
+  flex-grow: 6
   margin: 0 auto
   margin-top: 15px
   height: 70px
@@ -113,16 +134,17 @@ button
   position: absolute
   right: -20%
   top: 0
-  z-index: 999
+  z-index: 995
   background: #ffcf00
   text-align: center
 
 #extras-sidebar h2
   color: white
-  font-size: 3em
+  font-size: 2em
 
 #extras-sidebar button
   width: 95%
+  flex-grow: 6
   margin: 0 auto
   margin-top: 15px
   height: 70px

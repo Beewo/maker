@@ -10,6 +10,10 @@
 </head>
 
 <body>
+  <div class="modal">
+    <i id="close-modal" class="fa fa-times" aria-hidden="true"></i>
+    <div class="modal-body" id="modal"></div>
+  </div>
   <nav id="header">
     <h1>Beewo Maker</h1>
   </nav>
@@ -22,23 +26,56 @@
   <button id="show-validation-sidebar">3 <i class="fa fa-check-circle" aria-hidden="true"></i></button>
 </button>
   <div id="props-sidebar">
-    <h2>Add propellers</h2>
-    <button id="add3props">3 Props</button>
-    <button id="add4props">4 Props</button>
-    <button id="add6props">6 Prop</button>
+    <div class="toolbar">
+      <h2>Add propellers</h2>
+      <button id="add3props">
+        <i class="fa fa-paper-plane" aria-hidden="true"></i><br/>
+        3 Props
+      </button>
+      <button id="add4props">
+        <i class="fa fa-plane" aria-hidden="true"></i><br/>
+        4 Props
+      </button>
+      <button id="add6props">
+        <i class="fa fa-space-shuttle" style="transform: rotate(-45deg);" aria-hidden="true"></i><br/>
+        6 Prop
+      </button>
+    </div>
   </div>
   <div id="extras-sidebar">
-    <h2>Add extras</h2>
-    <button id="add-camera" disabled="true">Camera</button>
-    <button id="add-ir" disabled="true">IR sensor</button>
-    <button id="add-random" disabled="true">Random sensor</button>
+    <div class="toolbar">
+      <h2>Add extras</h2>
+      <button id="add-camera" disabled="true">
+        <i class="fa fa-video-camera" aria-hidden="true"></i><br/>
+        Camera
+      </button>
+      <button id="add-ir" disabled="true">
+        <i class="fa fa-dot-circle-o" aria-hidden="true"></i><br/>
+        IR sensor
+      </button>
+      <button id="add-random" disabled="true">
+        <i class="fa fa-puzzle-piece" aria-hidden="true"></i><br/>
+        Custom sensor
+      </button>
+    </div>
   </div>
   <div id="validation-sidebar">
-    <h2>Validate</h2>
-    <input id="load-input" type="file">
-    <button id="save">Save</button>
-    <button id="stl">Export to STL</button>
-    <button id="obj">Export to OBJ</button>
+    <div class="toolbar">
+      <h2>Validate</h2>
+      <input id="load-input" type="file">
+      <button id="save">
+        <i class="fa fa-floppy-o" aria-hidden="true"></i><br/>
+        Save
+      </button>
+      <button id="validate" disabled="true">
+        <i class="fa fa-check-circle" aria-hidden="true"></i><br/>
+        Validate drone
+      </button>
+      <button id="stl">
+        <i class="fa fa-cube" aria-hidden="true"></i><br/>
+        Prepare to print
+      </button>
+    </div>
   </div>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js'></script>

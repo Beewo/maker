@@ -18,6 +18,7 @@ prompted_modules = []
 objects = []
 selection = null
 arrow = null
+arrow_module = null
 
 selectionMaterial = new THREE.MeshStandardMaterial { color: 0x40e0d0 }
 mat = new THREE.MeshStandardMaterial {color: 0xfcde00}
@@ -219,7 +220,21 @@ promptModuleSlots = (model) ->
 addModule = (object) ->
   object.material = mat
   modules.push object
-  prompted_modules.remove object
+  index = prompted_modules.indexOf object
+  prompted_modules.splice index, 1
+
+deleteModule = (object) ->
+  index = scene.children.indexOf object.parent
+  scene.remove scene.children[index]
+
+  index = objects.indexOf object
+  objects.splice index, 1
+
+  index = modules.indexOf object
+  modules.splice index, 1
+
+  index = props.indexOf object
+  props.splice index, 1
 
 addSymmetricProps = (num, offset, rotateTo) ->
   offset ?= 0
@@ -236,18 +251,19 @@ addSymmetricProps = (num, offset, rotateTo) ->
       pivot.add( group )
       pivot.rotation.y = (360/num + offset) / 180 * Math.PI * i++
       scene.add( pivot )
-      box = new THREE.BoxHelper( pivot, 0xffff00 )
-      scene.add( box )
+      #box = new THREE.BoxHelper( pivot, 0xffff00 )
+      #scene.add( box )
       props.push group
       objects.push group
+  $('#validate').prop 'disabled', false
 
 
 renderer.domElement.addEventListener 'mousedown', (event) ->
   event.preventDefault()
   raycaster.setFromCamera mouse, camera
-  scene.remove ( arrow );
-  arrow = new THREE.ArrowHelper( raycaster.ray.direction, raycaster.ray.origin, 100, Math.random() * 0xffffff )
-  scene.add( arrow );
+  #scene.remove ( arrow );
+  #arrow = new THREE.ArrowHelper( raycaster.ray.direction, raycaster.ray.origin, 100, Math.random() * 0xffffff )
+  #scene.add( arrow );
   intersects = raycaster.intersectObjects(objects)
   if intersects.length > 0
     selected = intersects[0].object
@@ -262,9 +278,7 @@ renderer.domElement.addEventListener 'mousedown', (event) ->
       # highlight
       selection.material = selectionMaterial
       if event.which == 3
-        setTimeout( ->
-          alert "Do you want to delete this part?"
-        , 250)
+        deleteModule(selection)
 
   else
     if selection != null
@@ -274,8 +288,8 @@ $('#save').click ->
 
 
 toggleSidebar = (name) ->
-  clearPromptedModules()
   $( "#show-" + name + "-sidebar" ).click ->
+    clearPromptedModules()
     if sidebarShown
       sidebarShown = false
       $( "#" + name + "-sidebar" ).animate {
@@ -296,6 +310,85 @@ toggleSidebar = (name) ->
 toggleSidebar('props')
 toggleSidebar('extras')
 toggleSidebar('validation')
+
+document.getElementById('close-modal').addEventListener "mousedown", (event) ->
+  $('.modal').hide()
+
+document.getElementById('validate').addEventListener "mousedown", (event) ->
+  $('.modal').show()
+  validator()
+
+validator = () ->
+  weight_core      = 74 #grams
+  weight_prop      = 51
+  weight_module    = 24
+  weight_esc       = 4.535924
+  weight_cam_module= 0
+  weight_engine    = 11.8
+
+  time_core        = 335 #minutes
+  time_prop        = 244
+  time_module      = 103
+  time_cam_module  =   0
+
+  meter_core       = 24.77
+  meter_prop       = 17.17
+  meter_module     =  7.95
+  meter_cam_module =  0
+
+  engine_vol       = 7.4  #volt
+  engine_rpm       = 3100 #revolutions in one minute
+  engine_max_corr  = 7.9  #amperes
+  power_prop       = 58.5 #what
+  lift_weight_prop = 190  #grams
+
+  props_weight   = props.length   * weight_prop
+  props_time     = props.length   * time_prop
+  modules_weight = modules.length * weight_module
+  modules_time   = modules.length * time_module
+  esc_weight     = props.length   * weight_esc
+  engines_weight = props.length   * weight_engine
+
+  total_lift_w   = props.length   * lift_weight_prop
+  total_weight   = props_weight   + modules_weight + esc_weight + weight_core + engines_weight
+  total_power    = props.length   * power_prop
+  total_time     = props_time     + modules_time   + time_core
+  battery_life   = (5500/1000)/(engine_max_corr*props.length) * 60
+
+  module_x_distribution = 0
+  module_z_distribution = 0
+
+  i = 0
+  while i < modules.length
+    #console.log(modules[i].getWorldPosition();)
+    module_x_distribution += Math.round(modules[i].getWorldPosition().x)
+    module_z_distribution += Math.round(modules[i].getWorldPosition().z)
+    i++
+  x_module = (Math.round(module_x_distribution))
+  z_module = (Math.round(module_z_distribution))
+  module = x_module * x_module
+  module = module + z_module * z_module
+  module = Math.sqrt(module)
+
+  final  = new THREE.Vector3( x_module/module, 0, z_module/module );
+  origin = new THREE.Vector3( 0, 0, 0 );
+
+  if arrow_module != null
+    scene.remove arrow_module
+
+  arrow_module = new THREE.ArrowHelper( final, origin, 100, Math.random() * 0xffffff )
+  scene.add( arrow_module );
+
+  $('.modal-body').empty()
+
+  $('#modal').append("<p>The model is validated</p>" +
+    "<p>The weight of the drone is: " + Math.round(total_weight) + " grams</p>" +
+    "<p>The drone can lift this weight: " + Math.round(total_lift_w) + " grams</p>"+
+    "<p>The power of the drone is: " + total_power + " whatts</p>" +
+    "<p>The estimated time for printing the drone is: " + Math.round(total_time/60)+ " hours</p>" +
+    "<p>The duration of battery with 11.1 v and 5500mah is: " + Math.round(battery_life) + " minutes</p>"
+  );
+
 
 
 saveDrone = () ->
@@ -356,5 +449,3 @@ loadDrone = (f) ->
     console.log modules
 
   render()
-
-
