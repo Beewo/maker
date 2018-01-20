@@ -50,8 +50,6 @@ directionalLight.castShadow = true
 
 scene.add directionalLight
 
-
-
 # fog
 scene.fog = new THREE.Fog(0xc1e4e8, 0.015, 100);
 
@@ -72,8 +70,8 @@ this.onWindowResize = (event) ->
     renderer.setSize( window.innerWidth, window.innerHeight )
     renderer.render( scene, camera )
 
-this.onMouseMove = (event) -> 
-    
+this.onMouseMove = (event) ->
+
     mouse.x = ( event.clientX / window.innerWidth ) * 2 -1;
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1.15;
     #console.log(mouse.x+" "+mouse.y)
@@ -100,7 +98,7 @@ addCore()
 render = ->
   requestAnimationFrame render
   renderer.render scene, camera
-  raycaster.setFromCamera mouse, camera 
+  raycaster.setFromCamera mouse, camera
 
 render()
 
@@ -137,6 +135,10 @@ document.getElementById('add-random').addEventListener "mousedown", (event) ->
 
 document.getElementById('save').addEventListener "mousedown", (event) ->
   saveDrone()
+
+$("#load-input").change () ->
+  loadDrone this.files[0]
+
 
 disableButton = (n) ->
   $('#add4props').prop 'disabled', false
@@ -209,12 +211,12 @@ promptModuleSlots = (model) ->
 
       pivot = new THREE.Object3D()
       pivot.rotation.y = (360/(num_modules)*(prompted_modules.length+1)) / 180 * Math.PI
-      pivot.add( group )    
+      pivot.add( group )
       scene.add( pivot )
       prompted_modules.push group
       objects.push group
 
-addModule = (object) -> 
+addModule = (object) ->
   object.material = mat
   modules.push object
   prompted_modules.remove object
@@ -240,9 +242,9 @@ addSymmetricProps = (num, offset, rotateTo) ->
       objects.push group
 
 
-renderer.domElement.addEventListener 'mousedown', (event) ->  
+renderer.domElement.addEventListener 'mousedown', (event) ->
   event.preventDefault()
-  raycaster.setFromCamera mouse, camera  
+  raycaster.setFromCamera mouse, camera
   scene.remove ( arrow );
   arrow = new THREE.ArrowHelper( raycaster.ray.direction, raycaster.ray.origin, 100, Math.random() * 0xffffff )
   scene.add( arrow );
@@ -253,20 +255,23 @@ renderer.domElement.addEventListener 'mousedown', (event) ->
       selection.material = mat # we deselect it
       selection = null
     # check if the user is adding a new module
-    if prompted_modules.indexOf(selected) >= 0      
+    if prompted_modules.indexOf(selected) >= 0
       addModule(selected)
-    else      
+    else
       selection = selected
-      # highlight      
+      # highlight
       selection.material = selectionMaterial
       if event.which == 3
         setTimeout( ->
           alert "Do you want to delete this part?"
         , 250)
-        
+
   else
     if selection != null
       selection.material = mat
+
+$('#save').click ->
+
 
 toggleSidebar = (name) ->
   clearPromptedModules()
@@ -294,5 +299,62 @@ toggleSidebar('validation')
 
 
 saveDrone = () ->
-  # TODO
-   
+  #TODO remove prompted modules
+  sceneJSON = scene.toJSON()
+  propsJSON = []
+  i = 0
+  while i < props.length
+    propsJSON.push props[i].uuid
+    i += 1
+
+  modulesJSON = []
+  i = 0
+  while i < modules.length
+    modulesJSON.push props[i].uuid
+    i += 1
+  file = {scene: sceneJSON, props: propsJSON, modules: modulesJSON}
+  str = JSON.stringify(file)
+  element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(str));
+  element.setAttribute('download', 'design.bee');
+  $('#validation-sidebar').append(element);
+  element.click();
+  $('#validation-sidebar').remove(element);
+
+
+loadDrone = (f) ->
+  #TODO fix orbit controls issue
+  reader = new FileReader()
+  reader.onload = () ->
+    json = JSON.parse reader.result
+    loader = new THREE.ObjectLoader()
+    scene = loader.parse( json.scene )
+    console.log scene
+
+    propsArray   = json.props
+    modulesArray = json.modules
+
+    props = []
+    modules = []
+
+    i = 0
+    while i < scene.children.length
+      obj = scene.children[i]
+      if (obj.type == "Object3D")
+        j = 0
+        while j < obj.children.length
+          mod = obj.children[j]
+          console.log mod.uuid
+          if propsArray.indexOf(mod.uuid) != -1
+            props.push mod
+          else if modulesArray.indexOf mod.uuid != -1
+            modules.push mod
+          j += 1
+      i += 1
+
+    console.log props
+    console.log modules
+
+  render()
+
+
