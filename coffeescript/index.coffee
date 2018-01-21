@@ -26,6 +26,7 @@ arrow_module = null
 
 selectionMaterial = new THREE.MeshStandardMaterial { color: 0x40e0d0 }
 mat = new THREE.MeshStandardMaterial {color: 0xfcde00}
+arduino_mat = new THREE.MeshStandardMaterial {color: 0x3f6f70}
 promptedMaterial = new THREE.MeshStandardMaterial {color: 0x888888, transparent: true, opacity: 0.6}
 
 raycaster = new THREE.Raycaster()
@@ -282,6 +283,20 @@ deleteModule = (object) ->
   index = props.indexOf object
   props.splice index, 1
 
+addArduino = () ->
+  console.log("loading arduino")
+  loader.load "models/arduino.stl", (geometry) ->
+    group = new THREE.Mesh(geometry, arduino_mat)
+    group.scale.set(0.1, 0.1, 0.1)
+    group.rotation.x = -0.5 * Math.PI
+    group.rotation.z = Math.PI/1 + Math.PI/180
+    group.position.set(-3.5,5,0)
+    pivot = new THREE.Object3D()
+    pivot.add( group )
+    scene.add( pivot )
+    objects.push group
+
+
 addSymmetricProps = (num, offset, rotateTo) ->
   offset ?= 0
   rotateTo ?= 0
@@ -374,6 +389,7 @@ document.getElementById('validate').addEventListener "mousedown", (event) ->
   validator()
 
 document.getElementById('stl').addEventListener "mousedown", (event) ->
+  addArduino()
   saveToPrint()
 
 validator = () ->
