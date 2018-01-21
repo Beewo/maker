@@ -10,8 +10,13 @@ mouse = new THREE.Vector2()
 sidebarShown = false
 
 # drone structure
-props = []
-modules = []
+props            = []
+propMode         = 0
+moduleMode       = 0
+custom_modules   = []
+cam_modules      = []
+ir_modules       = []
+modules          = [cam_modules, ir_modules, custom_modules]
 prompted_modules = []
 
 # scene objects list
@@ -129,9 +134,19 @@ document.getElementById('add6props').addEventListener "mousedown", (event) ->
   clearPromptedModules()
   addSymmetricProps(6)
 
+document.getElementById('add-camera').addEventListener "mousedown", (event) ->
+  clearPromptedModules()
+  moduleMode       = 1
+  promptModuleSlots("models/cameramodule.stl")
+
+document.getElementById('add-ir').addEventListener "mousedown", (event) ->
+  clearPromptedModules()
+  moduleMode       = 2
+  promptModuleSlots("models/irmodule.stl")
 
 document.getElementById('add-random').addEventListener "mousedown", (event) ->
   clearPromptedModules()
+  moduleMode       = 3
   promptModuleSlots("models/testmodule.stl")
 
 document.getElementById('save').addEventListener "mousedown", (event) ->
@@ -189,11 +204,11 @@ promptModuleSlots = (model) ->
     position = -10
     position_x = 0
 
-    if props.length == 3
+    if propMode == 3
       angle = -30
       position = -10
       num_modules = 3
-    else if props.length == 6
+    else if propMode == 6
       angle = 30
       position = -20
       num_modules = 6
@@ -217,11 +232,12 @@ promptModuleSlots = (model) ->
       prompted_modules.push group
       objects.push group
 
-addModule = (object) ->
+addModule = (object, mode) ->
   object.material = mat
-  modules.push object
+  modules[mode-1].push object
   index = prompted_modules.indexOf object
   prompted_modules.splice index, 1
+  modules_count[mode-1] += 1
 
 deleteModule = (object) ->
   index = scene.children.indexOf object.parent
@@ -239,6 +255,7 @@ deleteModule = (object) ->
 addSymmetricProps = (num, offset, rotateTo) ->
   offset ?= 0
   rotateTo ?= 0
+  propMode = num
   loader.load "models/prop.stl", (geometry) ->
     i = 1
     while i <= num
@@ -272,7 +289,7 @@ renderer.domElement.addEventListener 'mousedown', (event) ->
       selection = null
     # check if the user is adding a new module
     if prompted_modules.indexOf(selected) >= 0
-      addModule(selected)
+      addModule(selected, moduleMode)
     else
       selection = selected
       # highlight
@@ -290,6 +307,7 @@ $('#save').click ->
 toggleSidebar = (name) ->
   $( "#show-" + name + "-sidebar" ).click ->
     clearPromptedModules()
+    moduleMode       = 0
     if sidebarShown
       sidebarShown = false
       $( "#" + name + "-sidebar" ).animate {
@@ -317,6 +335,9 @@ document.getElementById('close-modal').addEventListener "mousedown", (event) ->
 document.getElementById('validate').addEventListener "mousedown", (event) ->
   $('.modal').show()
   validator()
+
+document.getElementById('stl').addEventListener "mousedown", (event) ->
+  saveToPrint()
 
 validator = () ->
   weight_core      = 74 #grams
@@ -449,3 +470,22 @@ loadDrone = (f) ->
     console.log modules
 
   render()
+
+saveToPrint = () ->
+  file_contents = "You will need to print each file the amount" +
+                  " of times indicated to build your drone:\n\n"
+  file_contents += "1x core.stl\n"
+  file_contents += props.length + "x prop.stl\n"
+  file_contents += custom_modules.length + "x custom_module.stl\n"
+  file_contents += ir_modules.length + "x ir_module.stl\n"
+  file_contents += cam_modules.length + "x cam_module.stl\n\n"
+  file_contents += "Have fun building your new Beewo drone!"
+
+  zip = new JSZip()
+  zip.file("INSTRUCTIONS.txt", file_contents)
+  files = zip.folder("files")
+
+  zip.generateAsync({type:"base64"}).then((base64) ->
+    location.href="data:application/zip;base64," + base64;
+  )
+
