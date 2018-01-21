@@ -16,7 +16,6 @@ moduleMode       = 0
 custom_modules   = []
 cam_modules      = []
 ir_modules       = []
-modules          = [cam_modules, ir_modules, custom_modules]
 prompted_modules = []
 
 # scene objects list
@@ -178,14 +177,34 @@ clearProps = ->
 
 clearModules = ->
   i = 0
-  while i < modules.length
-    index = scene.children.indexOf modules[i].parent
+  while i < cam_modules.length
+    index = scene.children.indexOf cam_modules[i].parent
     scene.remove scene.children[index]
 
-    index = objects.indexOf modules[i]
+    index = objects.indexOf cam_modules[i]
     objects.splice index, 1
     i++
-  modules = []
+  cam_modules = []
+
+  i = 0
+  while i < ir_modules.length
+    index = scene.children.indexOf ir_modules[i].parent
+    scene.remove scene.children[index]
+
+    index = objects.indexOf ir_modules[i]
+    objects.splice index, 1
+    i++
+  ir_modules = []
+
+  i = 0
+  while i < custom_modules.length
+    index = scene.children.indexOf custom_modules[i].parent
+    scene.remove scene.children[index]
+
+    index = objects.indexOf custom_modules[i]
+    objects.splice index, 1
+    i++
+  custom_modules = []
 
 clearPromptedModules = ->
   i = 0
@@ -232,12 +251,17 @@ promptModuleSlots = (model) ->
       prompted_modules.push group
       objects.push group
 
-addModule = (object, mode) ->
+addModule = (object) ->
   object.material = mat
-  modules[mode-1].push object
+  if moduleMode == 1
+    cam_modules.push object
+    cam
+  else if moduleMode == 2
+    ir_modules.push object
+  else if moduleMode == 3
+    custom_modules.push object
   index = prompted_modules.indexOf object
   prompted_modules.splice index, 1
-  modules_count[mode-1] += 1
 
 deleteModule = (object) ->
   index = scene.children.indexOf object.parent
@@ -246,8 +270,14 @@ deleteModule = (object) ->
   index = objects.indexOf object
   objects.splice index, 1
 
-  index = modules.indexOf object
-  modules.splice index, 1
+  index = cam_modules.indexOf object
+  cam_modules.splice index, 1
+
+  index = ir_modules.indexOf object
+  ir_modules.splice index, 1
+
+  index = custom_modules.indexOf object
+  custom_modules.splice index, 1
 
   index = props.indexOf object
   props.splice index, 1
@@ -289,7 +319,7 @@ renderer.domElement.addEventListener 'mousedown', (event) ->
       selection = null
     # check if the user is adding a new module
     if prompted_modules.indexOf(selected) >= 0
-      addModule(selected, moduleMode)
+      addModule(selected)
     else
       selection = selected
       # highlight
@@ -307,7 +337,7 @@ $('#save').click ->
 toggleSidebar = (name) ->
   $( "#show-" + name + "-sidebar" ).click ->
     clearPromptedModules()
-    moduleMode       = 0
+    moduleMode = 0
     if sidebarShown
       sidebarShown = false
       $( "#" + name + "-sidebar" ).animate {
@@ -332,6 +362,13 @@ toggleSidebar('validation')
 document.getElementById('close-modal').addEventListener "mousedown", (event) ->
   $('.modal').hide()
 
+document.getElementById('new-design').addEventListener "mousedown", (event) ->
+  $('.modal').hide()
+
+$("#load-modal-input").change () ->
+  loadDrone this.files[0]
+  $('.modal').hide()
+
 document.getElementById('validate').addEventListener "mousedown", (event) ->
   $('.modal').show()
   validator()
@@ -340,6 +377,8 @@ document.getElementById('stl').addEventListener "mousedown", (event) ->
   saveToPrint()
 
 validator = () ->
+  modules = cam_modules.concat(ir_modules).concat(custom_modules)
+
   weight_core      = 74 #grams
   weight_prop      = 51
   weight_module    = 24
@@ -422,6 +461,7 @@ saveDrone = () ->
     i += 1
 
   modulesJSON = []
+  modules = cam_modules.concat(ir_modules).concat(custom_modules)
   i = 0
   while i < modules.length
     modulesJSON.push props[i].uuid
