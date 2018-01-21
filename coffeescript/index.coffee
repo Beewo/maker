@@ -318,6 +318,20 @@ addSymmetricProps = (num, offset, rotateTo) ->
       props.push group
       objects.push group
   $('#validate').prop 'disabled', false
+  $('#stl').prop 'disabled', false
+
+changeProps = () ->
+  loader.load "models/full_prop.stl", (geometry) ->
+    i = 0
+    while i < props.length
+      angle = props[i].parent.rotation.y
+      props[i].geometry.dispose()
+      props[i].geometry = geometry.clone()
+      props[i].rotation.x = -0.5 * Math.PI
+      props[i].rotation.z = 0
+      props[i].position.set(16.5,1,0)
+      props[i].parent.rotation.y = angle - Math.PI/6
+      i++
 
 
 renderer.domElement.addEventListener 'mousedown', (event) ->
@@ -390,6 +404,7 @@ document.getElementById('validate').addEventListener "mousedown", (event) ->
 
 document.getElementById('stl').addEventListener "mousedown", (event) ->
   addArduino()
+  changeProps()
   saveToPrint()
 
 validator = () ->
@@ -457,15 +472,13 @@ validator = () ->
 
   $('.modal-body').empty()
 
-  $('#modal').append("<p>The model is validated</p>" +
+  $('.modal-body').append("<p>The model is validated</p>" +
     "<p>The weight of the drone is: " + Math.round(total_weight) + " grams</p>" +
     "<p>The drone can lift this weight: " + Math.round(total_lift_w) + " grams</p>"+
     "<p>The power of the drone is: " + total_power + " whatts</p>" +
     "<p>The estimated time for printing the drone is: " + Math.round(total_time/60)+ " hours</p>" +
     "<p>The duration of battery with 11.1 v and 5500mah is: " + Math.round(battery_life) + " minutes</p>"
   );
-
-
 
 saveDrone = () ->
   #TODO remove prompted modules
