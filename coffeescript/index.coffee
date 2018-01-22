@@ -269,47 +269,53 @@ addModule = (object) ->
   prompted_modules.splice index, 1
 
 deleteModule = (object) ->
+  modules = cam_modules.concat(ir_modules).concat(custom_modules)
 
-  
   x_object =  Math.round(10*object.getWorldPosition().x)/10
   y_object =  Math.round(10*object.getWorldPosition().z)/10
 
   alert_enabled = 0
-  if (custom_modules.includes object) == false
+  if (modules.includes object) == false
     i = 0
     console.log("Prop iteration")
-    while i < custom_modules.length
-      x_mod =  Math.round(10*custom_modules[i].getWorldPosition().x)/10
-      y_mod =  Math.round(10*custom_modules[i].getWorldPosition().z)/10
+    while i < modules.length
+      x_mod =  Math.round(10*modules[i].getWorldPosition().x)/10
+      y_mod =  Math.round(10*modules[i].getWorldPosition().z)/10
       attached = 0
-      
+
       x_dis_mod = x_mod - x_object
       y_dis_mod = y_mod - y_object
       module_mod = x_dis_mod * x_dis_mod + y_dis_mod * y_dis_mod
-      module_mod = Math.sqrt(module_mod)        
+      module_mod = Math.sqrt(module_mod)
       console.log("distancia obj mod")
       console.log(module_mod)
 
       if module_mod < 11
         k = 0
-        while k < props.length       
+        while k < props.length
           x_prop =  Math.round(10*props[k].getWorldPosition().x)/10
-          y_prop =  Math.round(10*props[k].getWorldPosition().z)/10 
+          y_prop =  Math.round(10*props[k].getWorldPosition().z)/10
           x_dis = x_prop - x_mod
           y_dis = y_prop - y_mod
           module = x_dis * x_dis + y_dis * y_dis
           module = Math.sqrt(module)
-          #console.log(module)        
+          #console.log(module)
 
           if module < 11
-            attached = attached + 1  
-          k++  
+            attached = attached + 1
+          k++
         if attached < 2
-          alert_enabled = 1      
+          alert_enabled = 1
       i++
   if alert_enabled == 1
     alert "El borrado compromete a la máquina"
   else
+    index = scene.children.indexOf object.parent
+    scene.remove scene.children[index]
+
+    index = objects.indexOf object
+    objects.splice index, 1
+
     if cam_modules.includes object
       index = cam_modules.indexOf object
       cam_modules.splice index, 1
