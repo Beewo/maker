@@ -262,6 +262,54 @@ promptModuleSlots = (model) ->
       prompted_modules.push group
       objects.push group
 
+    setTimeout(() ->
+      modules = cam_modules.concat(ir_modules).concat(custom_modules)
+      h = 0
+      while h < prompted_modules.length
+        module = objects[objects.indexOf prompted_modules[h]]
+        x_object =  Math.round(10*module.getWorldPosition().x)/10
+        y_object =  Math.round(10*module.getWorldPosition().z)/10
+        i = 0
+        found = false
+        while i < props.length
+          x_mod =  Math.round(10*props[i].getWorldPosition().x)/10
+          y_mod =  Math.round(10*props[i].getWorldPosition().z)/10
+
+          x_dis_mod = x_mod - x_object
+          y_dis_mod = y_mod - y_object
+          module_mod = x_dis_mod * x_dis_mod + y_dis_mod * y_dis_mod
+          module_mod = Math.sqrt(module_mod)
+
+          if module_mod < 15
+            found = true
+            console.log "FOUND"
+            break
+          i++
+        if found == false
+          console.log "NEVER FOUND"
+          scene.remove module.parent
+          prompted_modules.splice h, 1
+          objects.splice objects.indexOf(module), 1
+        i = 0
+        while i < modules.length
+          x_mod =  Math.round(10*modules[i].getWorldPosition().x)/10
+          y_mod =  Math.round(10*modules[i].getWorldPosition().z)/10
+
+          x_dis_mod = x_mod - x_object
+          y_dis_mod = y_mod - y_object
+          console.log x_dis_mod + y_dis_mod
+          if Math.abs(x_dis_mod + y_dis_mod) < 0.5
+            console.log "ALREADY BUILT"
+            scene.remove module.parent
+            prompted_modules.splice h, 1
+            objects.splice objects.indexOf(module), 1
+          i++
+        h++
+    , 150)
+
+cleanPrompts = () ->
+  true
+
 addModule = (object) ->
   object.material = mat
   if moduleMode == 1
@@ -287,6 +335,7 @@ deleteModule = (object) ->
       x_mod =  Math.round(10*modules[i].getWorldPosition().x)/10
       y_mod =  Math.round(10*modules[i].getWorldPosition().z)/10
       attached = 0
+      console.log(modules[i].getWorldPosition())
 
       x_dis_mod = x_mod - x_object
       y_dis_mod = y_mod - y_object
@@ -422,9 +471,6 @@ renderer.domElement.addEventListener 'mousedown', (event) ->
   else
     if selection != null
       selection.material = mat
-
-$('#save').click ->
-
 
 toggleSidebar = (name) ->
   $( "#show-" + name + "-sidebar" ).click ->
