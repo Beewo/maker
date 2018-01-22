@@ -1,8 +1,12 @@
 html {
   margin: 0;
   padding: 0;
-  background: #fff;
-  font-family: "Varela Round", sans-serif; }
+  font-family: "Varela Round", sans-serif;
+  background: #11e8bb;
+  background: -moz-linear-gradient(top, #fff 50%, #fcfcfc 100%);
+  background: -webkit-linear-gradient(top, #fff 50%, #fcfcfc 100%);
+  background: linear-gradient(to bottom, #fff 50%, #fcfcfc 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fff', endColorstr='#fcfcfc',GradientType=0 ); }
 
 body {
   overflow: hidden; }
@@ -70,7 +74,8 @@ button {
 #editor {
   width: 100%;
   height: 100%;
-  display: block; }
+  display: block;
+  background: transparent; }
 
 #props-sidebar {
   padding-top: 30px;
