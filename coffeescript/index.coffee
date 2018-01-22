@@ -589,7 +589,7 @@ validator = () ->
   x_module = (x_module + x_propps)/3
   z_module = (z_module + y_propps)/3
 
-  final  = new THREE.Vector3( x_module/module, 0, z_module/module );
+  final  = new THREE.Vector3( x_module, 0, z_module );
   origin = new THREE.Vector3( 0, 0, 0 );
 
   if arrow_module != null
