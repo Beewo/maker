@@ -584,7 +584,7 @@
   });
 
   validator = function() {
-    var battery_life, engine_max_corr, engine_rpm, engine_vol, engines_weight, esc_weight, final, i, lift_weight_prop, meter_cam_module, meter_core, meter_module, meter_prop, module, module_x_distribution, module_z_distribution, modules, modules_time, modules_weight, origin, power_prop, props_time, props_weight, time_cam_module, time_core, time_module, time_prop, total_lift_w, total_power, total_time, total_weight, weight_cam_module, weight_core, weight_engine, weight_esc, weight_module, weight_prop, x_module, z_module;
+    var battery_life, engine_max_corr, engine_rpm, engine_vol, engines_weight, esc_weight, final, i, lift_weight_prop, meter_cam_module, meter_core, meter_module, meter_prop, modpr, module, module_x_distribution, module_z_distribution, modules, modules_time, modules_weight, origin, power_prop, propps_x_distribution, propps_z_distribution, props_time, props_weight, time_cam_module, time_core, time_module, time_prop, total_lift_w, total_power, total_time, total_weight, weight_cam_module, weight_core, weight_engine, weight_esc, weight_module, weight_prop, x_module, x_propps, y_propps, z_module;
     modules = cam_modules.concat(ir_modules).concat(custom_modules);
     weight_core = 74; //grams
     weight_prop = 51;
@@ -618,6 +618,20 @@
     battery_life = (5500 / 1000) / (engine_max_corr * props.length) * 60;
     module_x_distribution = 0;
     module_z_distribution = 0;
+    propps_x_distribution = 0;
+    propps_z_distribution = 0;
+    i = 0;
+    while (i < props.length) {
+      propps_x_distribution += Math.round(props[i].getWorldPosition().x);
+      propps_z_distribution += Math.round(props[i].getWorldPosition().z);
+      i++;
+    }
+    x_propps = Math.round(propps_x_distribution);
+    y_propps = Math.round(propps_z_distribution);
+    modpr = x_propps * x_propps + y_propps * y_propps;
+    modpr = Math.sqrt(modpr);
+    x_propps = x_propps / modpr * 2;
+    y_propps = y_propps / modpr * 2;
     i = 0;
     while (i < modules.length) {
       //console.log(modules[i].getWorldPosition();)
@@ -630,6 +644,10 @@
     module = x_module * x_module;
     module = module + z_module * z_module;
     module = Math.sqrt(module);
+    x_module = x_module / module;
+    z_module = z_module / module;
+    x_module = (x_module + x_propps) / 3;
+    z_module = (z_module + y_propps) / 3;
     final = new THREE.Vector3(x_module / module, 0, z_module / module);
     origin = new THREE.Vector3(0, 0, 0);
     if (arrow_module !== null) {
