@@ -164,6 +164,8 @@ disableButton = (n) ->
 
 enableStep2 = () ->
   $('#add-random').prop 'disabled', false
+  $('#add-ir').prop     'disabled', false
+  $('#add-camera').prop 'disabled', false
 
 clearProps = ->
   i = 0
@@ -183,6 +185,7 @@ clearModules = ->
     scene.remove scene.children[index]
 
     index = objects.indexOf cam_modules[i]
+    alert(index)
     objects.splice index, 1
     i++
   cam_modules = []
@@ -193,6 +196,7 @@ clearModules = ->
     scene.remove scene.children[index]
 
     index = objects.indexOf ir_modules[i]
+    alert(index)
     objects.splice index, 1
     i++
   ir_modules = []
@@ -225,17 +229,18 @@ promptModuleSlots = (model) ->
     position_x = 0
 
     if propMode == 3
+      position_x = 4
       angle = -30
-      position = -10
+      position = -12
       num_modules = 3
     else if propMode == 6
       angle = 30
-      position = -20
+      position = -24
       num_modules = 6
     else
       num_modules = 2
-      position = -10
-      position_x = 17
+      position = -12
+      position_x = 21
 
     while prompted_modules.length < num_modules
       group = new THREE.Mesh(geometry, promptedMaterial)
@@ -256,7 +261,6 @@ addModule = (object) ->
   object.material = mat
   if moduleMode == 1
     cam_modules.push object
-    cam
   else if moduleMode == 2
     ir_modules.push object
   else if moduleMode == 3
@@ -306,23 +310,30 @@ deleteModule = (object) ->
   if alert_enabled == 1
     alert "El borrado compromete a la máquina"
   else
-    index = scene.children.indexOf object.parent
-    scene.remove scene.children[index]
+    if cam_modules.includes object
+      index = cam_modules.indexOf object
+      cam_modules.splice index, 1
+    else if ir_modules.includes object
+      index = ir_modules.indexOf object
+      ir_modules.splice index, 1
+    else if custom_modules.includes object
+      index = custom_modules.indexOf object
+      custom_modules.splice index, 1
+    else
+      index = props.indexOf object
+      props.splice index, 1
 
-    index = objects.indexOf object
-    objects.splice index, 1
+    $('#add4props').prop 'disabled', false
+    $('#add3props').prop 'disabled', false
+    $('#add6props').prop 'disabled', false
 
-    index = cam_modules.indexOf object
-    cam_modules.splice index, 1
-
-    index = ir_modules.indexOf object
-    ir_modules.splice index, 1
-
-    index = custom_modules.indexOf object
-    custom_modules.splice index, 1
-
-    index = props.indexOf object
-    props.splice index, 1
+    if props.length == 0
+      $('#add-random').prop 'disabled', true
+      $('#add-ir').prop     'disabled', true
+      $('#add-camera').prop 'disabled', true
+      $('#save').prop       'disabled', true
+      $('#validate').prop   'disabled', true
+      $('#stl').prop        'disabled', true
 
 addArduino = () ->
   console.log("loading arduino")
@@ -582,20 +593,17 @@ loadDrone = (f) ->
   render()
 
 saveToPrint = () ->
-  file_contents = "You will need to print each file the amount" +
-                  " of times indicated to build your drone:\n\n"
-  file_contents += "1x core.stl\n"
-  file_contents += props.length + "x prop.stl\n"
-  file_contents += custom_modules.length + "x custom_module.stl\n"
-  file_contents += ir_modules.length + "x ir_module.stl\n"
-  file_contents += cam_modules.length + "x cam_module.stl\n\n"
-  file_contents += "Have fun building your new Beewo drone!"
+  file_contents = "<h2>Your drone is ready to print!</h2>" +
+                  "<p>You will need to print each file the amount" +
+                  " of times indicated to build your drone:</p>"
+  file_contents += "<li>1x core.stl"
+  file_contents += "<li>" + props.length + "x prop.stl</li>"
+  file_contents += "<li>" + custom_modules.length + "x custom_module.stl</li>"
+  file_contents += "<li>" + ir_modules.length + "x ir_module.stl</li>"
+  file_contents += "<li>" + cam_modules.length + "x cam_module.stl</li><br/>"
+  file_contents += "<p>Have fun building your new Beewo drone!</p>"
 
-  zip = new JSZip()
-  zip.file("INSTRUCTIONS.txt", file_contents)
-  files = zip.folder("files")
+  $('.modal-body').empty()
 
-  zip.generateAsync({type:"base64"}).then((base64) ->
-    location.href="data:application/zip;base64," + base64;
-  )
-
+  $('.modal-body').append(file_contents)
+  $('.modal').show()
