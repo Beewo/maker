@@ -247,6 +247,7 @@
       index = scene.children.indexOf(cam_modules[i].parent);
       scene.remove(scene.children[index]);
       index = objects.indexOf(cam_modules[i]);
+      alert(index);
       objects.splice(index, 1);
       i++;
     }
@@ -256,15 +257,18 @@
       index = scene.children.indexOf(ir_modules[i].parent);
       scene.remove(scene.children[index]);
       index = objects.indexOf(ir_modules[i]);
+      alert(index);
       objects.splice(index, 1);
       i++;
     }
     ir_modules = [];
+    alert(custom_modules.length);
     i = 0;
     while (i < custom_modules.length) {
       index = scene.children.indexOf(custom_modules[i].parent);
       scene.remove(scene.children[index]);
       index = objects.indexOf(custom_modules[i]);
+      alert(index);
       objects.splice(index, 1);
       i++;
     }
@@ -342,14 +346,19 @@
     scene.remove(scene.children[index]);
     index = objects.indexOf(object);
     objects.splice(index, 1);
-    index = cam_modules.indexOf(object);
-    cam_modules.splice(index, 1);
-    index = ir_modules.indexOf(object);
-    ir_modules.splice(index, 1);
-    index = custom_modules.indexOf(object);
-    custom_modules.splice(index, 1);
-    index = props.indexOf(object);
-    return props.splice(index, 1);
+    if (cam_modules.includes(object)) {
+      index = cam_modules.indexOf(object);
+      return cam_modules.splice(index, 1);
+    } else if (ir_modules.includes(object)) {
+      index = ir_modules.indexOf(object);
+      return ir_modules.splice(index, 1);
+    } else if (custom_modules.includes(object)) {
+      index = custom_modules.indexOf(object);
+      return custom_modules.splice(index, 1);
+    } else {
+      index = props.indexOf(object);
+      return props.splice(index, 1);
+    }
   };
 
   addArduino = function() {
