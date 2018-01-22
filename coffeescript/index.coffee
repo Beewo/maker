@@ -199,14 +199,12 @@ clearModules = ->
     i++
   ir_modules = []
 
-  alert(custom_modules.length)
   i = 0
   while i < custom_modules.length
     index = scene.children.indexOf custom_modules[i].parent
     scene.remove scene.children[index]
 
     index = objects.indexOf custom_modules[i]
-    alert(index)
     objects.splice index, 1
     i++
   custom_modules = []
@@ -260,7 +258,6 @@ addModule = (object) ->
   object.material = mat
   if moduleMode == 1
     cam_modules.push object
-    cam
   else if moduleMode == 2
     ir_modules.push object
   else if moduleMode == 3
@@ -546,20 +543,17 @@ loadDrone = (f) ->
   render()
 
 saveToPrint = () ->
-  file_contents = "You will need to print each file the amount" +
-                  " of times indicated to build your drone:\n\n"
-  file_contents += "1x core.stl\n"
-  file_contents += props.length + "x prop.stl\n"
-  file_contents += custom_modules.length + "x custom_module.stl\n"
-  file_contents += ir_modules.length + "x ir_module.stl\n"
-  file_contents += cam_modules.length + "x cam_module.stl\n\n"
-  file_contents += "Have fun building your new Beewo drone!"
+  file_contents = "<h2>Your drone is ready to print!</h2>" +
+                  "<p>You will need to print each file the amount" +
+                  " of times indicated to build your drone:</p>"
+  file_contents += "<li>1x core.stl"
+  file_contents += "<li>" + props.length + "x prop.stl</li>"
+  file_contents += "<li>" + custom_modules.length + "x custom_module.stl</li>"
+  file_contents += "<li>" + ir_modules.length + "x ir_module.stl</li>"
+  file_contents += "<li>" + cam_modules.length + "x cam_module.stl</li><br/>"
+  file_contents += "<p>Have fun building your new Beewo drone!</p>"
 
-  zip = new JSZip()
-  zip.file("INSTRUCTIONS.txt", file_contents)
-  files = zip.folder("files")
+  $('.modal-body').empty()
 
-  zip.generateAsync({type:"base64"}).then((base64) ->
-    location.href="data:application/zip;base64," + base64;
-  )
-
+  $('.modal-body').append(file_contents)
+  $('.modal').show()
