@@ -34,9 +34,8 @@ projector = new THREE.Projector()
 
 renderer.setPixelRatio window.devicePixelRatio
 renderer.setSize window.innerWidth, window.innerHeight
-renderer.setClearColor 0xffffff, 1.0
-renderer.shadowMap.enabled = true
-renderer.shadowMap.type = THREE.PCFShadowMap
+renderer.autoClear = false
+renderer.setClearColor 0xffffff, 0.0
 $('#editor').append renderer.domElement
 
 # camera
@@ -50,14 +49,20 @@ controls.enableZoom = true
 controls.addEventListener 'change', -> render
 
 # lightning
-directionalLight = new THREE.DirectionalLight( 0xffffff, 2, 100 )
-directionalLight.position.set 1, 1, 1
+directionalLight = new THREE.DirectionalLight( 0xffffff, 0.6, 100 )
+directionalLight.position.set 0, 10, 0
 directionalLight.castShadow = true
 
 scene.add directionalLight
 
+light = new THREE.AmbientLight( 0xffffff, 1.2 )
+light.position.set 5, 1, 1
+light.castShadow = true
+
+scene.add light
+
 # fog
-scene.fog = new THREE.Fog(0xc1e4e8, 0.015, 100);
+scene.fog = new THREE.Fog(0xc1e4e8, 0.015, 400);
 
 # resizable 3d view
 tanFOV = Math.tan( ( ( Math.PI / 180 ) * camera.fov / 2 ) )
