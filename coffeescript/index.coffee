@@ -288,6 +288,19 @@ deleteModule = (object) ->
     index = props.indexOf object
     props.splice index, 1
 
+  $('#add4props').prop 'disabled', false
+  $('#add3props').prop 'disabled', false
+  $('#add6props').prop 'disabled', false
+
+  if props.length == 0
+    $('#add-random').prop 'disabled', true
+    $('#add-ir').prop     'disabled', true
+    $('#add-camera').prop 'disabled', true
+    $('#save').prop       'disabled', true
+    $('#validate').prop   'disabled', true
+    $('#stl').prop        'disabled', true
+
+
 addArduino = () ->
   console.log("loading arduino")
   loader.load "models/arduino.stl", (geometry) ->

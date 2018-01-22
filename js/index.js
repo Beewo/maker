@@ -348,16 +348,27 @@
     objects.splice(index, 1);
     if (cam_modules.includes(object)) {
       index = cam_modules.indexOf(object);
-      return cam_modules.splice(index, 1);
+      cam_modules.splice(index, 1);
     } else if (ir_modules.includes(object)) {
       index = ir_modules.indexOf(object);
-      return ir_modules.splice(index, 1);
+      ir_modules.splice(index, 1);
     } else if (custom_modules.includes(object)) {
       index = custom_modules.indexOf(object);
-      return custom_modules.splice(index, 1);
+      custom_modules.splice(index, 1);
     } else {
       index = props.indexOf(object);
-      return props.splice(index, 1);
+      props.splice(index, 1);
+    }
+    $('#add4props').prop('disabled', false);
+    $('#add3props').prop('disabled', false);
+    $('#add6props').prop('disabled', false);
+    if (props.length === 0) {
+      $('#add-random').prop('disabled', true);
+      $('#add-ir').prop('disabled', true);
+      $('#add-camera').prop('disabled', true);
+      $('#save').prop('disabled', true);
+      $('#validate').prop('disabled', true);
+      return $('#stl').prop('disabled', true);
     }
   };
 
