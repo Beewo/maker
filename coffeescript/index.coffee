@@ -290,7 +290,7 @@ deleteModule = (object) ->
       console.log("distancia obj mod")
       console.log(module_mod)
 
-      if module_mod < 11
+      if module_mod < 15
         k = 0
         while k < props.length
           x_prop =  Math.round(10*props[k].getWorldPosition().x)/10
@@ -301,7 +301,7 @@ deleteModule = (object) ->
           module = Math.sqrt(module)
           #console.log(module)
 
-          if module < 11
+          if module < 15
             attached = attached + 1
           k++
         if attached < 2
