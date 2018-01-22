@@ -164,6 +164,8 @@ disableButton = (n) ->
 
 enableStep2 = () ->
   $('#add-random').prop 'disabled', false
+  $('#add-ir').prop     'disabled', false
+  $('#add-camera').prop 'disabled', false
 
 clearProps = ->
   i = 0
@@ -227,17 +229,18 @@ promptModuleSlots = (model) ->
     position_x = 0
 
     if propMode == 3
+      position_x = 4
       angle = -30
-      position = -10
+      position = -12
       num_modules = 3
     else if propMode == 6
       angle = 30
-      position = -20
+      position = -24
       num_modules = 6
     else
       num_modules = 2
-      position = -10
-      position_x = 17
+      position = -12
+      position_x = 21
 
     while prompted_modules.length < num_modules
       group = new THREE.Mesh(geometry, promptedMaterial)
