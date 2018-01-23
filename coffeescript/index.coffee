@@ -561,15 +561,18 @@ validator = () ->
 
   i = 0
   while i < props.length
-    propps_x_distribution += Math.round(props[i].getWorldPosition().x)
-    propps_z_distribution += Math.round(props[i].getWorldPosition().z)
+    propps_x_distribution += props[i].getWorldPosition().x
+    propps_z_distribution += props[i].getWorldPosition().z
     i++
   x_propps = Math.round(propps_x_distribution)
-  y_propps = Math.round(propps_z_distribution)
-  modpr = x_propps * x_propps + y_propps * y_propps
+  z_propps = Math.round(propps_z_distribution)
+  modpr = x_propps * x_propps + z_propps * z_propps
   modpr = Math.sqrt(modpr)
-  x_propps = x_propps/modpr*2
-  y_propps = y_propps/modpr*2
+  if modpr < 0.1
+    modpr = 0.1
+  console.log(x_propps/modpr,0,z_propps/modpr)
+  x_propps = (x_propps/modpr)*2
+  z_propps = (z_propps/modpr)*2
 
   i = 0
   while i < modules.length
@@ -582,10 +585,10 @@ validator = () ->
   module = x_module * x_module
   module = module + z_module * z_module
   module = Math.sqrt(module)
-  x_module = x_module/module
-  z_module = z_module/module
+  x_module = (x_module/module)
+  z_module = (z_module/module)
   x_module = (x_module + x_propps)/3
-  z_module = (z_module + y_propps)/3
+  z_module = (z_module + z_propps)/3
 
   final  = new THREE.Vector3( x_module, 0, z_module );
   origin = new THREE.Vector3( 0, 0, 0 );
