@@ -354,10 +354,12 @@
             y_mod = Math.round(10 * modules[i].getWorldPosition().z) / 10;
             x_dis_mod = x_mod - x_object;
             y_dis_mod = y_mod - y_object;
+            console.log(x_dis_mod + y_dis_mod, i);
             if (Math.abs(x_dis_mod + y_dis_mod) < 0.5) {
               scene.remove(module.parent);
               prompted_modules.splice(h, 1);
               objects.splice(objects.indexOf(module), 1);
+              h--;
             }
             i++;
           }
@@ -478,7 +480,6 @@
           k++;
         }
         if (attached === 0) {
-          console.log("Tenemos que borrar", i);
           index = scene.children.indexOf(prompted_modules[i].parent);
           scene.remove(scene.children[index]);
           index = prompted_modules.indexOf(prompted_modules[i]);
