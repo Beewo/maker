@@ -73,6 +73,13 @@ window.addEventListener "mousemove",(event) -> this.onMouseMove(event)
 
 window.addEventListener "resize", (event) -> this.onWindowResize(event)
 
+# Shortcuts
+
+document.getElementById("show-props-sidebar").accessKey = "w";
+document.getElementById("show-extras-sidebar").accessKey = "e";
+document.getElementById("show-validation-sidebar").accessKey = "r";
+document.getElementById("load-input").accessKey = "l";
+
 this.onWindowResize = (event) ->
     camera.aspect = window.innerWidth / window.innerHeight
     camera.fov = ( 360 / Math.PI ) * Math.atan( tanFOV * ( window.innerHeight / windowHeight ) )
