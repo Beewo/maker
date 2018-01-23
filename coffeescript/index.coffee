@@ -585,6 +585,8 @@ validator = () ->
   module = x_module * x_module
   module = module + z_module * z_module
   module = Math.sqrt(module)
+  if module < 0.1
+    module = 0.1
   x_module = (x_module/module)
   z_module = (z_module/module)
   x_module = (x_module + x_propps)/3
