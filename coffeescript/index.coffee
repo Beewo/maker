@@ -85,7 +85,6 @@ this.onMouseMove = (event) ->
 
     mouse.x = ( event.clientX / window.innerWidth ) * 2 -1;
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1.15;
-    #console.log(mouse.x+" "+mouse.y)
 
 
 
@@ -281,11 +280,9 @@ promptModuleSlots = (model) ->
 
           if module_mod < 15
             found = true
-            console.log "FOUND"
             break
           i++
         if found == false
-          console.log "NEVER FOUND"
           scene.remove module.parent
           prompted_modules.splice h, 1
           objects.splice objects.indexOf(module), 1
@@ -296,9 +293,7 @@ promptModuleSlots = (model) ->
 
           x_dis_mod = x_mod - x_object
           y_dis_mod = y_mod - y_object
-          console.log x_dis_mod + y_dis_mod
           if Math.abs(x_dis_mod + y_dis_mod) < 0.5
-            console.log "ALREADY BUILT"
             scene.remove module.parent
             prompted_modules.splice h, 1
             objects.splice objects.indexOf(module), 1
@@ -386,6 +381,7 @@ deleteModule = (object) ->
       $('#stl').prop        'disabled', true
     i = 0
     while i < prompted_modules.length
+      console.log("module",i)
       x_mod =  Math.round(10*prompted_modules[i].getWorldPosition().x)/10
       y_mod =  Math.round(10*prompted_modules[i].getWorldPosition().z)/10
       k = 0
@@ -396,18 +392,20 @@ deleteModule = (object) ->
         x_dis = x_prop - x_mod
         y_dis = y_prop - y_mod
         module = x_dis * x_dis + y_dis * y_dis
+        if module < 0.1
+          module = 0.1
         module = Math.sqrt(module)
         if module < 15
-          attached =  1
+          attached = 1
           break
         k++
       if attached == 0
-        console.log("Tenemos que borrar")
+        console.log("Tenemos que borrar",i)
         index = scene.children.indexOf prompted_modules[i].parent
         scene.remove scene.children[index]
-
         index = prompted_modules.indexOf prompted_modules[i]
         prompted_modules.splice index, 1
+        i--
       i++
 
 
@@ -415,7 +413,6 @@ deleteModule = (object) ->
 
 
 addArduino = () ->
-  console.log("loading arduino")
   loader.load "models/arduino.stl", (geometry) ->
     group = new THREE.Mesh(geometry, arduino_mat)
     group.scale.set(0.1, 0.1, 0.1)
@@ -467,7 +464,6 @@ changeProps = () ->
 
 renderer.domElement.addEventListener 'mousedown', (event) ->
   event.preventDefault()
-  console.log("CLICK")
   raycaster.setFromCamera mouse, camera
   #scene.remove ( arrow );
   #arrow = new THREE.ArrowHelper( raycaster.ray.direction, raycaster.ray.origin, 100, Math.random() * 0xffffff )
@@ -591,13 +587,11 @@ validator = () ->
   modpr = Math.sqrt(modpr)
   if modpr < 0.1
     modpr = 0.1
-  console.log(x_propps/modpr,0,z_propps/modpr)
   x_propps = (x_propps/modpr)*2
   z_propps = (z_propps/modpr)*2
 
   i = 0
   while i < modules.length
-    #console.log(modules[i].getWorldPosition();)
     module_x_distribution += Math.round(modules[i].getWorldPosition().x)
     module_z_distribution += Math.round(modules[i].getWorldPosition().z)
     i++
@@ -674,10 +668,8 @@ loadDrone = (f) ->
   while(scene.children.length > 0)
     scene.remove(scene.children[0])
 
-  console.log "LOADING"
   reader = new FileReader()
   reader.onload = () ->
-    console.log "LOADED"
     json = JSON.parse reader.result
     loader = new THREE.ObjectLoader()
     scene = loader.parse( json.scene )
@@ -702,7 +694,6 @@ loadDrone = (f) ->
           while j < obj.children.length
             mod = obj.children[j]
             objects.push mod
-            console.log mod.uuid
             if propsArray.indexOf(mod.uuid) != -1
               props.push mod
             else if camArray.indexOf mod.uuid != -1
@@ -719,12 +710,6 @@ loadDrone = (f) ->
     loader.crossOrigin = ''
     raycaster = new THREE.Raycaster()
     projector = new THREE.Projector()
-
-    console.log props
-    console.log cam_modules
-    console.log ir_modules
-    console.log custom_modules
-    console.log objects
 
   reader.readAsText(f)
   render()

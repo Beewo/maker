@@ -339,13 +339,11 @@
             module_mod = Math.sqrt(module_mod);
             if (module_mod < 15) {
               found = true;
-              console.log("FOUND");
               break;
             }
             i++;
           }
           if (found === false) {
-            console.log("NEVER FOUND");
             scene.remove(module.parent);
             prompted_modules.splice(h, 1);
             objects.splice(objects.indexOf(module), 1);
@@ -356,9 +354,7 @@
             y_mod = Math.round(10 * modules[i].getWorldPosition().z) / 10;
             x_dis_mod = x_mod - x_object;
             y_dis_mod = y_mod - y_object;
-            console.log(x_dis_mod + y_dis_mod);
             if (Math.abs(x_dis_mod + y_dis_mod) < 0.5) {
-              console.log("ALREADY BUILT");
               scene.remove(module.parent);
               prompted_modules.splice(h, 1);
               objects.splice(objects.indexOf(module), 1);
@@ -460,6 +456,7 @@
       i = 0;
       results = [];
       while (i < prompted_modules.length) {
+        console.log("module", i);
         x_mod = Math.round(10 * prompted_modules[i].getWorldPosition().x) / 10;
         y_mod = Math.round(10 * prompted_modules[i].getWorldPosition().z) / 10;
         k = 0;
@@ -470,6 +467,9 @@
           x_dis = x_prop - x_mod;
           y_dis = y_prop - y_mod;
           module = x_dis * x_dis + y_dis * y_dis;
+          if (module < 0.1) {
+            module = 0.1;
+          }
           module = Math.sqrt(module);
           if (module < 15) {
             attached = 1;
@@ -478,11 +478,12 @@
           k++;
         }
         if (attached === 0) {
-          console.log("Tenemos que borrar");
+          console.log("Tenemos que borrar", i);
           index = scene.children.indexOf(prompted_modules[i].parent);
           scene.remove(scene.children[index]);
           index = prompted_modules.indexOf(prompted_modules[i]);
           prompted_modules.splice(index, 1);
+          i--;
         }
         results.push(i++);
       }
@@ -491,7 +492,6 @@
   };
 
   addArduino = function() {
-    console.log("loading arduino");
     return loader.load("models/arduino.stl", function(geometry) {
       var group, pivot;
       group = new THREE.Mesh(geometry, arduino_mat);
@@ -559,7 +559,6 @@
   renderer.domElement.addEventListener('mousedown', function(event) {
     var intersects, selected;
     event.preventDefault();
-    console.log("CLICK");
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects(objects);
     if (intersects.length > 0) {
@@ -700,7 +699,6 @@
     if (modpr < 0.1) {
       modpr = 0.1;
     }
-    console.log(x_propps / modpr, 0, z_propps / modpr);
     x_propps = (x_propps / modpr) * 2;
     z_propps = (z_propps / modpr) * 2;
     i = 0;
@@ -780,11 +778,9 @@
     while (scene.children.length > 0) {
       scene.remove(scene.children[0]);
     }
-    console.log("LOADING");
     reader = new FileReader();
     reader.onload = function() {
       var camArray, customArray, irArray, json, propsArray;
-      console.log("LOADED");
       json = JSON.parse(reader.result);
       loader = new THREE.ObjectLoader();
       scene = loader.parse(json.scene);
@@ -808,7 +804,6 @@
             while (j < obj.children.length) {
               mod = obj.children[j];
               objects.push(mod);
-              console.log(mod.uuid);
               if (propsArray.indexOf(mod.uuid) !== -1) {
                 props.push(mod);
               } else if (camArray.indexOf(mod.uuid !== -1)) {
@@ -828,12 +823,7 @@
       loader = new THREE.STLLoader();
       loader.crossOrigin = '';
       raycaster = new THREE.Raycaster();
-      projector = new THREE.Projector();
-      console.log(props);
-      console.log(cam_modules);
-      console.log(ir_modules);
-      console.log(custom_modules);
-      return console.log(objects);
+      return projector = new THREE.Projector();
     };
     reader.readAsText(f);
     return render();
