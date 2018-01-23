@@ -329,20 +329,14 @@ deleteModule = (object) ->
   alert_enabled = 0
   if (modules.includes object) == false
     i = 0
-    console.log("Prop iteration")
     while i < modules.length
       x_mod =  Math.round(10*modules[i].getWorldPosition().x)/10
       y_mod =  Math.round(10*modules[i].getWorldPosition().z)/10
       attached = 0
-      console.log(modules[i].getWorldPosition())
-
       x_dis_mod = x_mod - x_object
       y_dis_mod = y_mod - y_object
       module_mod = x_dis_mod * x_dis_mod + y_dis_mod * y_dis_mod
       module_mod = Math.sqrt(module_mod)
-      console.log("distancia obj mod")
-      console.log(module_mod)
-
       if module_mod < 15
         k = 0
         while k < props.length
@@ -352,8 +346,6 @@ deleteModule = (object) ->
           y_dis = y_prop - y_mod
           module = x_dis * x_dis + y_dis * y_dis
           module = Math.sqrt(module)
-          #console.log(module)
-
           if module < 15
             attached = attached + 1
           k++
@@ -361,7 +353,7 @@ deleteModule = (object) ->
           alert_enabled = 1
       i++
   if alert_enabled == 1
-    alert "El borrado compromete a la máquina"
+    alert "The delete compromises the drone"
   else
     index = scene.children.indexOf object.parent
     scene.remove scene.children[index]
@@ -392,6 +384,35 @@ deleteModule = (object) ->
       $('#add-camera').prop 'disabled', true
       $('#validate').prop   'disabled', true
       $('#stl').prop        'disabled', true
+    i = 0
+    while i < prompted_modules.length
+      x_mod =  Math.round(10*prompted_modules[i].getWorldPosition().x)/10
+      y_mod =  Math.round(10*prompted_modules[i].getWorldPosition().z)/10
+      k = 0
+      attached = 0
+      while k < props.length
+        x_prop =  Math.round(10*props[k].getWorldPosition().x)/10
+        y_prop =  Math.round(10*props[k].getWorldPosition().z)/10
+        x_dis = x_prop - x_mod
+        y_dis = y_prop - y_mod
+        module = x_dis * x_dis + y_dis * y_dis
+        module = Math.sqrt(module)
+        if module < 15
+          attached =  1
+          break
+        k++
+      if attached == 0
+        console.log("Tenemos que borrar")
+        index = scene.children.indexOf prompted_modules[i].parent
+        scene.remove scene.children[index]
+
+        index = prompted_modules.indexOf prompted_modules[i]
+        prompted_modules.splice index, 1
+      i++
+
+
+
+
 
 addArduino = () ->
   console.log("loading arduino")
