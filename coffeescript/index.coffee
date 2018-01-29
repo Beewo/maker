@@ -195,7 +195,6 @@ clearModules = ->
     scene.remove scene.children[index]
 
     index = objects.indexOf cam_modules[i]
-    alert(index)
     objects.splice index, 1
     i++
   cam_modules = []
@@ -206,7 +205,6 @@ clearModules = ->
     scene.remove scene.children[index]
 
     index = objects.indexOf ir_modules[i]
-    alert(index)
     objects.splice index, 1
     i++
   ir_modules = []
