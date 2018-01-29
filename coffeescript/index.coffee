@@ -449,8 +449,6 @@ addSymmetricProps = (num, offset, rotateTo) ->
       pivot.add( group )
       pivot.rotation.y = (360/num + offset) / 180 * Math.PI * i++
       scene.add( pivot )
-      #box = new THREE.BoxHelper( pivot, 0xffff00 )
-      #scene.add( box )
       props.push group
       objects.push group
   $('#validate').prop 'disabled', false
@@ -732,6 +730,7 @@ saveToPrint = () ->
   file_contents += "<li>" + ir_modules.length + "x ir_module.stl</li>"
   file_contents += "<li>" + cam_modules.length + "x cam_module.stl</li><br/>"
   file_contents += "<p>Have fun building your new Beewo drone!</p>"
+  file_contents += "<p><a href='https://www.thingiverse.com/beewo/about' target='_blank'>Download the files from our thingiverse</a><p>"
 
   $('.modal-body').empty()
 
